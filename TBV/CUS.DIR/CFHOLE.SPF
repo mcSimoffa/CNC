@@ -1,0 +1,61 @@
+N1 PROC cfhole(REAL RTP,REAL SDIS,REAL ZNULL,REAL KATET, REAL DOTV) SAVE DISPLOF
+def real savex,savey,saveoffn
+def int actool,actn
+def real rdown,rup,angl,toolkatet,toollen,Zkatet,rotv
+if $P_SEARCH ;PROPUSK PRI POISKE KADRA
+ ret
+endif
+actool=$p_toolno
+actn=$p_tool
+if $TC_DP1[actool,actn]<>140
+ msg(<<"Type of Tool must be 140 (FaceMill)")
+ m0
+ ret
+endif
+rdown=$TC_DP6[actool,actn];rad Down
+rup=$TC_DP7[actool,actn];rad Up
+angl=$TC_DP11[actool,actn];ang
+if (angl<=0) or (angl>=90)
+ msg(<<"Invalid parametr of Tool:Angle must 0...90")
+ m0
+ ret
+endif
+toolkatet=rup-rdown ;XY katet
+if toolkatet<=0
+ msg(<<"Invalid parametr of Tool:Outside Diametr < Diametr")
+ m0
+ ret
+endif
+toollen=toolkatet/tan(angl)
+Zkatet=KATET/tan(angl)
+rotv=DOTV/2
+if rotv<rdown
+ msg(<<"This Tool has very big Diametr")
+ m0
+ ret
+endif
+
+IF (rotv+KATET<=rup) and (rotv>=rdown) ;only Z move
+ G0 Z=ZNULL+SDIS
+ G1 Z=ZNULL-(rotv+KATET-rdown)/tan(angl)
+ G4 S1
+ G1 Z=IC(SDIS)
+ G0 Z=RTP
+ELSE
+ STOPRE
+ if Zkatet>toollen-.5
+ msg(<<"Chamfer is very big")
+  m0
+  ret
+ endif
+ G0 Z=ZNULL+SDIS
+ SAVEX=$AA_IW[X]
+ SAVEY=$AA_IW[Y]
+ G1 Z=ZNULL-Zkatet-0.5
+ G3 Y=SAVEY+(ROTV-rdown-0.5) CR=ABS(ROTV-rdown-0.5)/2
+ G3 I=AC(SAVEX) J=AC(SAVEY)
+ G3 Y=SAVEY CR=ABS(ROTV-rdown-0.5)/2
+ENDIF 
+G0 Z=RTP
+RET
+

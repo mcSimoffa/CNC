@@ -1,0 +1,422 @@
+PROC MS_CA(INT M_NT,REAL M_H,REAL M_L,REAL M_OFFR,REAL M_OFFL,REAL M_P1X,REAL M_P2X,REAL M_P3Y,REAL M_P4Y,REAL M_P5X,REAL M_P6X,REAL M_P7Y, REAL M_P8Y,REAL M_TOLLP, REAL M_TOLLA,REAL M_TOLLZ,STRING[20] M_TITO,INT M_ORIG) SAVE
+DEF REAL MS_ABS_INPUT
+DEF REAL _P1X,_P2X,_P3Y,_P4Y,_P5X,_P6X,_P7Y,_P8Y
+DEF REAL M_POSZ,_M21,_M43R,_M65,_M87R,_Q21,_Q43R,_Q65,_Q87R,_MX,_MY,_MYR,_QX,_QY,_QYR
+DEF REAL ASSE_PX,ASSE_PY, M_PZ[9]
+DEF STRING[60] FILEINI
+DEF STRING[60] AUXIN
+DEF STRING[60] AUXOUT
+DEF STRING[100] SCRIVI
+
+;************************************************
+; CICLO DI CENTRAGGIO PARALLELEPIPEDO
+;
+;				M_P6X			M_P5X
+;			--------------------------
+;	M_P7Y	|			Y			  |	M_P4Y
+;			|			|			  |
+;			|		(ORIGINE)--->X	  |	
+;	M_P8Y	|						  |	M_P3Y
+;			---------------------------
+;				M_P1X			M_P2X
+;
+;
+;
+; SIEMENS 840D/828D  		  
+; VER 10.1 15/02/2016            
+;************************************************
+
+;** CONTROLLO SE SIMULAZIONE O TEST************
+IF $P_SEARCH OR $P_ISTEST OR $P_SIM OR $P_DRYRUN
+ RET
+ENDIF
+;**********************************************
+
+;***** GESTIONE PIU SONDE**********************
+FILEINI="/_N_CUS_DIR/_N_MS_INIS"<<M_NT<<"_SPF"
+AUXIN="/_N_CUS_DIR/_N_MS_IN"<<M_NT<<"_SPF"
+AUXOUT="/_N_CUS_DIR/_N_MS_OUT"<<M_NT<<"_SPF"
+STOPRE
+CALL FILEINI  ;richiamo file ini
+IF MS_ACT==1
+ M=(MS_SON)
+ G4 F1.2
+ENDIF
+CALL AUXIN    ;richiamo ausiliare ingresso
+;**********************************************
+
+;***** PARAMETRI DEL CICLO********
+G1 F=MS_RAPID
+IF (MS_X_SHIFT==0) AND (MS_Y_SHIFT==0)		; ADDED FOR TOOL SHIFT
+	MS_D=$TC_DP6[$P_TOOLNO,$P_TOOL]
+ELSE
+	MS_D=MS_R_SPHERE					
+ENDIF
+
+
+MS_ABS_INPUT=ABS(MS_INPUTS)
+M_POSZ=$AA_IW[MS_Z]-MS_L_TOOL
+ASSE_PX=$AA_IW[MS_X]+MS_X_SHIFT
+ASSE_PY=$AA_IW[MS_Y]+MS_Y_SHIFT
+MS_SHFZ=0
+_PMZ=0
+ 
+ _P1X=-(M_H/2)-MS_D-MS_CS
+ _P2X=-(M_H/2)-MS_D-MS_CS
+ _P3Y=(M_L/2)+MS_D+MS_CS
+ _P4Y=(M_L/2)+MS_D+MS_CS
+ _P5X=(M_H/2)+MS_D+MS_CS
+ _P6X=(M_H/2)+MS_D+MS_CS
+ _P7Y=-(M_L/2)-MS_D-MS_CS
+ _P8Y=-(M_L/2)-MS_D-MS_CS
+ 
+
+;punto P1X
+
+IF M_OFFR==0 GOTOF LABEL100
+MS_MOVE(M_NT,M_P1X,-(M_H/2)+M_OFFR,MS_CS,MS_RAPID)
+MS_TCHS(MS_Z,-1)
+M_PZ[1]=MS_POS1-MSZM[M_NT]-MS_D
+MS_SHFZ=MS_SHFZ+M_PZ[1]
+LABEL100:
+MS_MOVE(M_NT,M_P1X,_P1X,,MS_RAPID)
+MS_MOVE(M_NT,,,M_PZ[1]-M_OFFL,MS_RAPID)
+MS_TCHS(MS_Y,1)
+MS_POINTXY[1]=MS_POS1-MSYP[M_NT]+MS_D
+MS_MOVE(M_NT,,,MS_CS,MS_RAPID)
+
+;punto P2X
+
+IF M_OFFR==0 GOTOF LABEL101
+MS_MOVE(M_NT,M_P2X,-(M_H/2)+M_OFFR,,MS_RAPID)
+MS_TCHS(MS_Z,-1)
+M_PZ[2]=MS_POS1-MSZM[M_NT]-MS_D
+MS_SHFZ=MS_SHFZ+M_PZ[2]
+LABEL101:
+MS_MOVE(M_NT,M_P2X,_P2X,,MS_RAPID)
+MS_MOVE(M_NT,,,M_PZ[2]-M_OFFL,MS_RAPID)
+MS_TCHS(MS_Y,1)
+MS_POINTXY[2]=MS_POS1-MSYP[M_NT]+MS_D
+MS_MOVE(M_NT,,,MS_CS,MS_RAPID)
+
+;punto P3Y
+
+IF M_OFFR==0 GOTOF LABEL102
+MS_MOVE(M_NT,(M_L/2)-M_OFFR,M_P3Y,,MS_RAPID)
+MS_TCHS(MS_Z,-1)
+M_PZ[3]=MS_POS1-MSZM[M_NT]-MS_D
+MS_SHFZ=MS_SHFZ+M_PZ[3]
+LABEL102:
+MS_MOVE(M_NT,_P3Y,M_P3Y,,MS_RAPID)
+MS_MOVE(M_NT,,,M_PZ[3]-M_OFFL,MS_RAPID)
+MS_TCHS(MS_X,-1)
+MS_POINTXY[3]=MS_POS1-MSXM[M_NT]-MS_D
+MS_MOVE(M_NT,,,MS_CS,MS_RAPID)
+
+;punto P4Y
+
+IF M_OFFR==0 GOTOF LABEL103
+MS_MOVE(M_NT,(M_L/2)-M_OFFR,M_P4Y,,MS_RAPID)
+MS_TCHS(MS_Z,-1)
+M_PZ[4]=MS_POS1-MSZM[M_NT]-MS_D
+MS_SHFZ=MS_SHFZ+M_PZ[4]
+LABEL103:
+MS_MOVE(M_NT,_P4Y,M_P4Y,,MS_RAPID)
+MS_MOVE(M_NT,,,M_PZ[4]-M_OFFL,MS_RAPID)
+MS_TCHS(MS_X,-1)
+MS_POINTXY[4]=MS_POS1-MSXM[M_NT]-MS_D
+MS_MOVE(M_NT,,,MS_CS,MS_RAPID)
+
+;punto P5X
+
+IF M_OFFR==0 GOTOF LABEL104
+MS_MOVE(M_NT,M_P5X,(M_H/2)-M_OFFR,MS_CS,MS_RAPID)
+MS_TCHS(MS_Z,-1)
+M_PZ[5]=MS_POS1-MSZM[M_NT]-MS_D
+MS_SHFZ=MS_SHFZ+M_PZ[5]
+LABEL104:
+MS_MOVE(M_NT,M_P5X,_P5X,,MS_RAPID)
+MS_MOVE(M_NT,,,M_PZ[5]-M_OFFL,MS_RAPID)
+MS_TCHS(MS_Y,-1)
+MS_POINTXY[5]=MS_POS1-MSYM[M_NT]-MS_D
+MS_MOVE(M_NT,,,MS_CS,MS_RAPID)
+
+;punto P6X
+
+IF M_OFFR==0 GOTOF LABEL105
+MS_MOVE(M_NT,M_P6X,(M_H/2)-M_OFFR,,MS_RAPID)
+MS_TCHS(MS_Z,-1)
+M_PZ[6]=MS_POS1-MSZM[M_NT]-MS_D
+MS_SHFZ=MS_SHFZ+M_PZ[6]
+LABEL105:
+MS_MOVE(M_NT,M_P6X,_P6X,,MS_RAPID)
+MS_MOVE(M_NT,,,M_PZ[6]-M_OFFL,MS_RAPID)
+MS_TCHS(MS_Y,-1)
+MS_POINTXY[6]=MS_POS1-MSYM[M_NT]-MS_D
+MS_MOVE(M_NT,,,MS_CS,MS_RAPID)
+
+;punto P7Y
+
+IF M_OFFR==0 GOTOF LABEL107
+MS_MOVE(M_NT,-(M_L/2)+M_OFFR,M_P7Y,,MS_RAPID)
+MS_TCHS(MS_Z,-1)
+M_PZ[7]=MS_POS1-MSZM[M_NT]-MS_D
+MS_SHFZ=MS_SHFZ+M_PZ[7]
+LABEL107:
+MS_MOVE(M_NT,_P7Y,M_P7Y,,MS_RAPID)
+MS_MOVE(M_NT,,,M_PZ[7]-M_OFFL,MS_RAPID)
+MS_TCHS(MS_X,1)
+MS_POINTXY[7]=MS_POS1-MSXP[M_NT]+MS_D
+MS_MOVE(M_NT,,,MS_CS,MS_RAPID)
+
+;punto P8Y
+
+IF M_OFFR==0 GOTOF LABEL108
+MS_MOVE(M_NT,-(M_L/2)+M_OFFR,M_P8Y,,MS_RAPID)
+MS_TCHS(MS_Z,-1)
+M_PZ[8]=MS_POS1-MSZM[M_NT]-MS_D
+MS_SHFZ=MS_SHFZ+M_PZ[8]
+LABEL108:
+MS_MOVE(M_NT,_P8Y,M_P8Y,,MS_RAPID)
+MS_MOVE(M_NT,,,M_PZ[8]-M_OFFL,MS_RAPID)
+MS_TCHS(MS_X,1)
+MS_POINTXY[8]=MS_POS1-MSXP[M_NT]+MS_D
+MS_MOVE(M_NT,,,MS_CS,MS_RAPID)
+
+;*****calcolo dati elemento***********
+; PIANO XY
+; coefficienti angolari m
+_M21=((MS_POINTXY[2]-MS_POINTXY[1])/(M_P2X-M_P1X))
+_M43R=-((MS_POINTXY[4]-MS_POINTXY[3])/(M_P4Y-M_P3Y)) ; coefficiente angolare retta ruotata di 90 gradi
+_M65=((MS_POINTXY[6]-MS_POINTXY[5])/(M_P6X-M_P5X))
+_M87R=-((MS_POINTXY[8]-MS_POINTXY[7])/(M_P8Y-M_P7Y)) ; coefficiente angolare retta ruotata di 90 gradi
+
+; parametri Q delle rette
+_Q21=MS_POINTXY[1]-(_M21*M_P1X)
+_Q43R=MS_POINTXY[3]+(_M43R*M_P3Y) ; parametro della retta ruotata di 90 gradi
+_Q65=MS_POINTXY[5]-(_M65*M_P5X)
+_Q87R=MS_POINTXY[7]+(_M87R*M_P7Y) ; parametro della retta ruotata di 90 gradi
+
+; caratterizzo la retta sull'asse X
+_MX=((_M21+_M65)/2)
+_QX=((_Q21+_Q65)/2)
+
+MS_ROTX=ATAN2(_MX,1)
+
+; caratterizzo la retta in Y ruotata e poi calcolo i parametri in Y ruotando di nuovo
+_MYR=((_M43R+_M87R)/2)
+_QYR=((_Q43R+_Q87R)/2)
+IF _MYR==0
+_MYR=0.000001
+ENDIF
+_MY=-1/_MYR
+_QY=-(_QYR*_MY)
+
+MS_ROTY=ATAN2(_MYR,1)
+MS_ROTXY=(MS_ROTX+MS_ROTY)/2
+
+;il centro è l'intersezione delle due rette
+MS_SHFX=((_QY-_QX)/(_MX-_MY))
+MS_SHFY=(_MX*MS_SHFX)+_QX
+MS_SHFZ=MS_SHFZ/8
+
+; PIANO ZX-ZY
+; coefficienti angolari m
+_M21=((M_PZ[2]-M_PZ[1])/(M_P2X-M_P1X)) ; piano ZX
+_M43R=-((M_PZ[4]-M_PZ[3])/(M_P4Y-M_P3Y)) ; coefficiente angolare retta ruotata di 90 gradi-piano ZY
+_M65=((M_PZ[6]-M_PZ[5])/(M_P6X-M_P5X)); piano ZX
+_M87R=-((M_PZ[8]-M_PZ[7])/(M_P8Y-M_P7Y)) ; coefficiente angolare retta ruotata di 90 gradi-piano ZY
+
+; parametri Q delle rette
+_Q21=M_PZ[1]-(_M21*M_P1X)
+_Q43R=M_PZ[3]+(_M43R*M_P3Y) ; parametro della retta ruotata di 90 gradi
+_Q65=M_PZ[5]-(_M65*M_P5X)
+_Q87R=M_PZ[7]+(_M87R*M_P7Y) ; parametro della retta ruotata di 90 gradi
+
+; caratterizzo la retta sull'asse X
+_MX=((_M21+_M65)/2)
+_QX=((_Q21+_Q65)/2)
+
+MS_ROTZX=ATAN2(_MX,1)
+
+; caratterizzo la retta in Y ruotata e poi calcolo i parametri in Y ruotando di nuovo
+_MYR=((_M43R+_M87R)/2)
+_QYR=((_Q43R+_Q87R)/2)
+IF _MYR==0
+_MYR=0.000001
+ENDIF
+_MY=-1/_MYR
+_QY=-(_QYR*_MY)
+
+MS_ROTZY=ATAN2(_MYR,1)
+
+; controllo tolleranza perpendicolarità tra i lati del parallelepipedo
+IF M_TOLLP==0 GOTOF NOTOLLP
+M_TOLLP=TAN(M_TOLLP)
+IF (ABS(_M21-_M43R) > M_TOLLP) GOTOF ALLARME998
+IF (ABS(_M21-_M65) > M_TOLLP) GOTOF ALLARME998
+IF (ABS(_M21-_M87R) > M_TOLLP) GOTOF ALLARME998
+IF (ABS(_M43R-_M65) > M_TOLLP) GOTOF ALLARME998
+IF (ABS(_M21-_M87R) > M_TOLLP) GOTOF ALLARME998
+IF (ABS(_M65-_M87R) > M_TOLLP) GOTOF ALLARME998
+NOTOLLP:
+
+; controllo tolleranza angolo posizionamento
+IF M_TOLLA==0 GOTOF NOTOLLA
+IF  MS_ROTX > M_TOLLA GOTOF ALLARME999
+IF  MS_ROTY > M_TOLLA GOTOF ALLARME999
+NOTOLLA:
+; controllo tolleranza riferimento in Z
+IF M_TOLLZ==0 GOTOF NOTOLLZ
+IF  MS_SHFZ > M_TOLLA GOTOF ALLARME997
+NOTOLLZ:
+
+
+;********archiviazione dati********
+IF (ISNUMBER(M_TITO)<>32) AND (M_TITO<>"")
+ 
+ SCRIVI="(MS_CA)      "<<$A_DAY<<"-"<<$A_MONTH<<"-"<<$A_YEAR<<"  "<<$A_HOUR<<":"<<$A_MINUTE<<":"<<$A_SECOND<<""
+ MS_SAVE(M_TITO,SCRIVI)
+  
+ M_P1X=(TRUNC(M_P1X*1000))/1000
+ MS_POINTXY[1]=(TRUNC(MS_POINTXY[1]*1000))/1000
+ STOPRE
+ SCRIVI="P1X= "<<M_P1X<<"   P1Y= "<<MS_POINTXY[1]<<""
+ MS_SAVE(M_TITO,SCRIVI)
+ 
+ M_P2X=(TRUNC(M_P2X*1000))/1000
+ MS_POINTXY[2]=(TRUNC(MS_POINTXY[2]*1000))/1000
+ STOPRE
+ SCRIVI="P2X= "<<M_P2X<<"   P2Y= "<<MS_POINTXY[2]<<""
+ MS_SAVE(M_TITO,SCRIVI)
+
+ M_P3Y=(TRUNC(M_P3Y*1000))/1000
+ MS_POINTXY[3]=(TRUNC(MS_POINTXY[3]*1000))/1000
+ STOPRE
+ SCRIVI="P3X= "<< MS_POINTXY[3]<<"   P3Y= "<<M_P3Y<<""
+ MS_SAVE(M_TITO,SCRIVI)
+
+ M_P4Y=(TRUNC(M_P4Y*1000))/1000
+ MS_POINTXY[4]=(TRUNC(MS_POINTXY[4]*1000))/1000
+ STOPRE
+ SCRIVI="P4X= "<< MS_POINTXY[4]<<"   P4Y= "<<M_P4Y<<""
+ MS_SAVE(M_TITO,SCRIVI)
+
+ M_P5X=(TRUNC(M_P5X*1000))/1000
+ MS_POINTXY[5]=(TRUNC(MS_POINTXY[5]*1000))/1000
+ STOPRE
+ SCRIVI="P5X= "<<M_P5X<<"   P5Y= "<<MS_POINTXY[5]<<""
+ MS_SAVE(M_TITO,SCRIVI)
+
+ M_P6X=(TRUNC(M_P6X*1000))/1000
+ MS_POINTXY[6]=(TRUNC(MS_POINTXY[6]*1000))/1000
+ STOPRE
+ SCRIVI="P6X= "<<M_P6X<<"   P6Y= "<<MS_POINTXY[6]<<""
+ MS_SAVE(M_TITO,SCRIVI)
+
+ M_P7Y=(TRUNC(M_P7Y*1000))/1000
+ MS_POINTXY[7]=(TRUNC(MS_POINTXY[7]*1000))/1000
+ STOPRE
+ SCRIVI="P7X= "<< MS_POINTXY[7]<<"   P7Y= "<<M_P7Y<<""
+ MS_SAVE(M_TITO,SCRIVI)
+
+ M_P8Y=(TRUNC(M_P8Y*1000))/1000
+ MS_POINTXY[8]=(TRUNC(MS_POINTXY[8]*1000))/1000
+ STOPRE
+ SCRIVI="P8X= "<< MS_POINTXY[8]<<"   P8Y= "<<M_P8Y<<""
+ MS_SAVE(M_TITO,SCRIVI)
+ 
+ M_P8Y=(TRUNC(M_P8Y*1000))/1000
+ MS_POINTXY[8]=(TRUNC(MS_POINTXY[8]*1000))/1000
+ STOPRE
+ SCRIVI="P8X= "<< MS_POINTXY[8]<<"   P8Y= "<<M_P8Y<<""
+ MS_SAVE(M_TITO,SCRIVI)
+ 
+ MS_SHFX=(TRUNC(MS_SHFX*1000))/1000
+ MS_SHFY=(TRUNC(MS_SHFY*1000))/1000
+ MS_SHFZ=(TRUNC(MS_SHFZ*1000))/1000
+ MS_ROTXY=(TRUNC(MS_ROTXY*1000))/1000
+ IF M_OFFR<>0
+	STOPRE
+	SCRIVI="X SHIFT= "<< MS_SHFX<<" Y SHIFT= "<<MS_SHFY<<" Z SHIFT= "<<MS_SHFZ<<" XY ROT= "<<MS_ROTXY<<""
+ ELSE
+	STOPRE
+	SCRIVI="X SHIFT= "<< MS_SHFX<<" Y SHIFT= "<<MS_SHFY<<" XY ROT= "<<MS_ROTXY<<""
+ ENDIF
+ MS_SAVE(M_TITO,SCRIVI)
+ SCRIVI="______________________END______________________"
+ MS_SAVE(M_TITO,SCRIVI)
+ENDIF
+
+;*******aggiornamento origine**********
+IF M_ORIG<>0
+ IF M_ORIG>0  ; modifica campo GROSSOLANO e resetta gli altri
+     ;asse x
+       $P_UIFR[M_ORIG,MS_X,TR]=$P_UIFR[$P_UIFRNUM,MS_X,TR]+MS_SHFX
+       $P_UIFR[M_ORIG,MS_X,FI]=0
+       $P_UIFR[M_ORIG,MS_X,RT]=0
+       $P_UIFR[M_ORIG,MS_X,SC]=1
+       $P_UIFR[M_ORIG,MS_X,MI]=0
+      ;asse y
+       $P_UIFR[M_ORIG,MS_Y,TR]=$P_UIFR[$P_UIFRNUM,MS_Y,TR]+MS_SHFY
+       $P_UIFR[M_ORIG,MS_Y,FI]=0
+       $P_UIFR[M_ORIG,MS_Y,RT]=0
+       $P_UIFR[M_ORIG,MS_Y,SC]=1
+       $P_UIFR[M_ORIG,MS_Y,MI]=0
+     ; asse z
+	 IF M_OFFR<>0 
+	   $P_UIFR[M_ORIG,MS_Z,TR]=$P_UIFR[$P_UIFRNUM,MS_Z,TR]+MS_SHFZ
+       $P_UIFR[M_ORIG,MS_Z,FI]=0
+       $P_UIFR[M_ORIG,MS_Z,RT]=0
+       $P_UIFR[M_ORIG,MS_Z,SC]=1
+       $P_UIFR[M_ORIG,MS_Z,MI]=0
+	 ENDIF
+ ELSE ; M_ORIG<0   modifica campo FINE e non tocca gli altri
+     M_ORIG=ABS(M_ORIG)
+     ;asse x
+       $P_UIFR[M_ORIG,MS_X,FI]=MS_SHFX
+     ;asse y
+       $P_UIFR[M_ORIG,MS_Y,FI]=MS_SHFY
+	 ; asse z
+	 IF M_OFFR<>0 
+	   $P_UIFR[M_ORIG,MS_Z,FI]=MS_SHFZ
+	 ENDIF
+  ENDIF
+ENDIF
+;**************************************
+GOTOF END
+ALLARME997: ;"riferimento su Z superiore alla tolleranza"
+D=MS_DA
+IF MS_ACT==1
+	M=(MS_SOFF)
+ENDIF
+MS_ALM(207)
+M17
+
+
+
+ALLARME998: ;"perpendicolarità lati superiore alla tolleranza"
+D=MS_DA
+IF MS_ACT==1
+	M=(MS_SOFF)
+ENDIF
+MS_ALM(208)
+M17
+
+ALLARME999: ;"angolo posizionamento superiore alla tolleranza"
+D=MS_DA
+IF MS_ACT==1
+	M=(MS_SOFF)
+ENDIF
+MS_ALM(209)
+M17
+
+END:
+TRANS
+CALL AUXOUT ;richiamo ausiliare uscita
+IF MS_ACT==1
+ M=(MS_SOFF)
+ENDIF
+D=MS_DA
+M17
+

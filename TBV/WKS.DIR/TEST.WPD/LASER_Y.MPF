@@ -1,0 +1,43 @@
+DEF REAL START_P=0    ; Abs. starting point
+DEF REAL DIR_T=-1     ; -1=minus 1=positive
+DEF REAL INT_STEP=50  ; interval distance
+DEF REAL DEL_BACK=0.3 ; Delete backlash
+DEF INT T_POINTS=12   ; Total points
+DEF INT T_TIMES=5     ; Total Times (Forward and Backward)
+DEF INT LOOP_C        ; Loop counter for total times
+DEF INT LOOP_C1       ; Loop counter for forward or backward
+G94 G1 G500 D0 
+F=$MA_MAX_AX_VELO[AX2]/2 ;10000
+MSG("Go to starting point...")
+G90 Y=(-0.3*DIR_T)+START_P
+Y=START_P
+MSG("Start measurement...")
+M0
+;Forward movement
+LOOP_C=0 ;Loop counter cleared
+LN0:
+LOOP_C1=0 ;Loop counter cleared
+;FOR LOOP_C=0 TO T_POINTS
+LN1:
+G91 Y=DIR_T*INT_STEP
+G4F3
+LOOP_C1=LOOP_C1+1
+IF LOOP_C1 < T_POINTS GOTOB LN1
+;END Forward movement
+;Backward movement
+/M30
+G4F8
+Y=DIR_T*DEL_BACK
+Y=-1*DIR_T*DEL_BACK
+G4F3
+LOOP_C1=0 ;Loop counter cleared
+G4F3
+LN2:
+G91 Y=-1*DIR_T*INT_STEP
+G4F3
+LOOP_C1=LOOP_C1+1
+IF LOOP_C1 < T_POINTS GOTOB LN2
+LOOP_C=LOOP_C+1
+G4F8
+IF LOOP_C < T_TIMES GOTOB LN0
+M30

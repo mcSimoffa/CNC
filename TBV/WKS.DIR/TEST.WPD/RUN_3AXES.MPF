@@ -1,0 +1,17 @@
+
+DEF INT T_REPEAT=700   ; Repeat times
+;
+DEF INT LOOP_C      ; Loop counter
+;-----------------------------------
+LOOP_C=0
+LN1:
+G90G500G1F5000
+M3S3000
+X0Y0Z0
+G4F5
+X780Y-460Z-500
+G4F5
+LOOP_C=LOOP_C+1
+IF LOOP_C < T_REPEAT GOTOB LN1
+X390Y-230Z-250
+M30

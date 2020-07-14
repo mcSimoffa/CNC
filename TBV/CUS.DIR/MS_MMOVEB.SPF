@@ -1,0 +1,35 @@
+PROC MS_MOVEB(AXIS M_ASSE,REAL M_POSIZ,REAL MFEED) SAVE
+DEF REAL MS_ABS_INPUT
+
+;*************************************************
+; CICLO MOVIMENTO ASSI IN SICUREZZA INCREMENTALE
+; SIEMENS 840D/828D  		
+; VER 10.1 15/02/2016       
+;*************************************************
+
+;** CONTROLLO SE SIMULAZIONE O TEST************
+IF $P_SEARCH OR $P_ISTEST OR $P_SIM OR $P_DRYRUN
+ RET
+ENDIF
+;**********************************************
+
+;** PARAMETRI CICLO ***************************
+IF MFEED==0
+ MFEED=MS_RAPID
+ENDIF
+MS_ABS_INPUT=ABS(MS_INPUTS)
+;**********************************************
+
+;** INIZIO MOVIMENTO **************************
+G91
+G1 MEAS=MS_INPUTS  G60 F=MFEED AX[M_ASSE]=M_POSIZ
+STOPRE
+IF $AC_MEA[MS_ABS_INPUT]==1 GOTOF ALLARME1
+;**********************************************
+G90
+M17
+
+ALLARME1: ;"sonda deflessa durante movimento"
+MS_ALM(202)
+M17
+

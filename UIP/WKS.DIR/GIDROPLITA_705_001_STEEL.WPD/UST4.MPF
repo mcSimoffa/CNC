@@ -1,0 +1,81 @@
+;POVERNUT' NA 180 PO OSI X,KAK V 1m USTANOVE
+;POVERNUT' PROTIV CHASOVOI NA 90 PO OSI Y
+N10 G54 ;nol X sprava 
+STOPRE
+R1=$P_UIFR[1,X,TR]+$P_UIFR[1,X,FI]
+R2=$P_UIFR[1,Y,TR]+$P_UIFR[1,Y,FI]
+R3=$P_UIFR[1,Z,TR]+$P_UIFR[1,Z,FI]
+STOPRE
+$P_UIFR[2]=CTRANS(X,R1-40,Y,R2, Z,R3+118)
+G55
+STOPRE
+WORKPIECE(,,,"BOX",0,0,-118,-80,0,0,-70,-90)
+
+T="SV 11.9"
+m6
+d1
+m3
+s250 g95 f0.12
+G0 Z150
+M8
+MCALL CYCLE82(100,0,1,-37,,0.1,10,1,12)
+otv: g0 x-45 y-35
+x-15 y-70
+otve: mcall
+g0 SUPA z-20
+m9 m1
+
+T="FR8L30"
+M6
+d1
+m3 s4000 g94 f800
+g0 z200
+m8
+;RASKATKA(RTP,SDIS,ZNULL,GLUBINA,DST, DFIN,TURNFACTOR)
+N120 mcall RASKATKA(50,1,0,.5,12,26,2)
+repeat otv otve
+N120 mcall RASKATKA(50,1,0,20,12,15.4,2)
+repeat otv otve
+g0 SUPA z-20
+m9 m1
+
+T="FR6"
+m6
+d1
+m3 s5000 g94 f700
+g0 x-4.5 y6 z200 m8
+;cyctr (rtp, Zwork, sdis, trstep,with, string[50] traect,char prof)
+N150 CYCTRE(50,-10,11,0.15,11,"G1 y-52.5")
+g0 x-7 y-55
+z1
+g1 z-10 f300
+z5 f500 offn=-.1
+G0 x-10 y6 g41
+G1 z-10
+y-58 rnd=3
+x5
+y-50 g40
+g0 SUPA z-20
+m9 m1
+
+T="E45X-D06"
+m6
+d1
+m3 s3000 g94 f300
+g0 z200 m8
+x-80 y10
+chamf(0,.7,1)
+g1 y0 g41
+x-10
+y-58 rnd=3
+x0
+y-90
+x-70
+y5
+x-75 g40
+g0 z50
+mcall cfhole(50,1,-.5,1.25,15.2);RTP,SDIS,ZNULL,KATET,DOTV
+repeat otv otve
+g0 SUPA z-20
+supa y0 M9
+m30

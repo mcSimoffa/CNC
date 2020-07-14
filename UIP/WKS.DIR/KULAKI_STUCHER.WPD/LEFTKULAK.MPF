@@ -1,0 +1,42 @@
+
+WORKPIECE(,,,"BOX",112,0,-37,-80,0,0,95,-35)
+T="FR32Z3"
+M6
+D1
+M3 S1200 G94 F600
+G0 Z200 M8
+CYCLE61(100,0,2,-38,95,0,78,-35,6,6,0,600,21,1,1,11000)
+G0 Z200 M1
+
+T="FR 6"
+M6
+D1
+M3 S4000 G94 F500
+G0 Z200 M8
+X82 Y-14.82
+;cyctr (rtp, Zwork, sdis, trstep,with, string[50] traect,char prof)
+N150 CYCTRE(50,-10,11,.2,7,"g1 X74")
+X82 Y-14.82
+;cyctr (rtp, Zwork, sdis, trstep,with, string[50] traect,char prof)
+N150 CYCTRE(50,-20,21,.2,7,"g1 X74")
+R4=-10
+UGOL:
+R1=1.5 R2=0 R3=0.2
+WHILE R1>R2
+ R1=R1-R3
+ IF R1<R2
+   R1=R2
+ ENDIF
+G0 X82.33 Y-7.21 G41 OFFN=R1
+G0 Z=R4
+G1 X73.06 Y-12.56
+X80.5 Y-25.45
+X85 Y-16 G40
+ENDWHILE
+UGOLE:
+R4=-20
+REPEAT UGOL UGOLE
+
+G0 Z100 M9
+M30
+

@@ -1,0 +1,6 @@
+;NCG#QSCAL#bguiqs.com#PRGCODE1#*NCG;*RO*;*HD*
+;##"Angle offset Scan feedrate"#2##2###"\\"#""#"png"#"png"#1#1#100#0#*NCG;*RO*;*HD*
+BL9700(,50,,,,,,,,,,,,,,1)
+;#END#*NCG;*RO*;*HD*
+M02
+

@@ -1,0 +1,131 @@
+PROC MS_3HP2(INT M_NT,INT M_TC,REAL M_DIA1,REAL M_Z1,REAL M_X1,REAL M_Y1,REAL M_DIA2,REAL M_Z2,REAL M_X2,REAL M_Y2,REAL M_ALFA,REAL M_BETA,REAL M_GAMMA,REAL M_TOLL,STRING[20] M_TITO,INT M_ORIG)
+DEF REAL DIA[2],_X[2],_Y[2],ANGTEORICO
+DEF STRING[60] FILEINI
+DEF STRING[60] AUXIN
+DEF STRING[60] AUXOUT
+DEF STRING[100] SCRIVI
+
+;********************************
+; CICLO DI MISURA PEZZO CON
+; 2 FORI-SPINE
+; SIEMENS 840D/828D  		*
+; VER 10.1 15/02/2016           *
+;********************************
+
+;** CONTROLLO SE SIMULAZIONE O TEST************
+IF $P_SEARCH OR $P_ISTEST OR $P_SIM OR $P_DRYRUN
+ RET
+ENDIF
+;**********************************************
+
+;***** GESTIONE PIU SONDE**********************
+FILEINI="/_N_CUS_DIR/_N_MS_INIS"<<M_NT<<"_SPF"
+AUXIN="/_N_CUS_DIR/_N_MS_IN"<<M_NT<<"_SPF"
+AUXOUT="/_N_CUS_DIR/_N_MS_OUT"<<M_NT<<"_SPF"
+STOPRE
+CALL FILEINI  ;richiamo file ini
+IF MS_ACT==1
+ M=(MS_SON)
+ G4 F1.2
+ENDIF
+CALL AUXIN    ;richiamo ausiliare ingresso
+;**********************************************
+
+;misuro primo foro/perno e memorizzo risultati
+MS_3HP(M_NT,M_TC,M_DIA1,M_Z1,M_X1,M_Y1,M_ALFA,M_BETA,M_GAMMA,0,"",0)
+DIA[0]=MS_DIAM_REAL
+_X[0]=M_X1+MS_ERR_X
+_Y[0]=M_Y1+MS_ERR_Y
+;**********************************************
+
+;misuro secondo foro/perno e memorizzo risultati
+MS_3HP(M_NT,M_TC,M_DIA2,M_Z2,M_X2,M_Y2,M_ALFA,M_BETA,M_GAMMA,0,"",0)
+DIA[1]=MS_DIAM_REAL
+_X[1]=M_X2+MS_ERR_X
+_Y[1]=M_Y2+MS_ERR_Y
+;**********************************************
+
+;alaborazione dati rilevati
+MS_I2CX=(_X[0]+_X[1])/2
+MS_I2CY=(_Y[0]+_Y[1])/2
+MS_A2C=ATAN2((_Y[1]-_Y[0]),(_X[1]-_X[0]))
+MS_D2C=SQRT(POT(_Y[1]-_Y[0])+POT(_X[1]-_X[0]))
+;**********************************************
+
+;********controllo tolleranza**********
+IF M_TOLL<>0
+ ANGTEORICO=ATAN2((M_Y2-M_Y1),(M_X2-M_X1))
+ IF ABS(ANGTEORICO-MS_A2C)>M_TOLL
+  MS_ALM(203)
+ ENDIF
+ENDIF
+;**************************************
+
+;********archiviazione dati************
+IF ISNUMBER(M_TITO)<>32
+ DIA[0]=(TRUNC(DIA[0]*1000))/1000
+ _X[0]=(TRUNC(_X[0]*1000))/1000
+ _Y[0]=(TRUNC(_Y[0]*1000))/1000
+ DIA[1]=(TRUNC(DIA[1]*1000))/1000
+ _X[1]=(TRUNC(_X[1]*1000))/1000
+ _Y[1]=(TRUNC(_Y[1]*1000))/1000
+ MS_I2CX=(TRUNC(MS_I2CX*1000))/1000
+ MS_I2CY=(TRUNC(MS_I2CY*1000))/1000
+ MS_A2C=(TRUNC(MS_A2C*1000))/1000
+ MS_D2C=(TRUNC(MS_D2C*1000))/1000
+ STOPRE
+ SCRIVI="(MS_3HP2)      "<<$A_DAY<<"-"<<$A_MONTH<<"-"<<$A_YEAR<<"  "<<$A_HOUR<<":"<<$A_MINUTE<<":"<<$A_SECOND<<""
+ MS_SAVE(M_TITO,SCRIVI)
+ SCRIVI="X1="<<_X[0]<<" Y1="<<_Y[0]<<" D1="<<DIA[0]<<""
+ MS_SAVE(M_TITO,SCRIVI)
+ SCRIVI="X2="<<_X[1]<<" Y2="<<_Y[1]<<" D2="<<DIA[1]<<""
+ MS_SAVE(M_TITO,SCRIVI)
+ SCRIVI="XM="<<MS_I2CX<<" YM="<<MS_I2CY<<" ANG="<<MS_A2C<<" D="<<MS_D2C<<""
+ MS_SAVE(M_TITO,SCRIVI)
+ SCRIVI="______________________END______________________"
+ MS_SAVE(M_TITO,SCRIVI)
+ENDIF
+;**************************************
+
+
+;*******aggiornamento origine**********
+IF M_ORIG<>0
+ IF M_ORIG>0  ; modifica campo GROSSOLANO e resetta gli altri
+   IF M_ORIG==$P_UIFRNUM origine da modificare uguale a origine attiva
+    $P_UIFR[M_ORIG,MS_X,TR]=$P_UIFR[$P_UIFRNUM,MS_X,TR]+(((M_X1+M_X2)/2)-MS_I2CX)
+    $P_UIFR[M_ORIG,MS_Y,TR]=$P_UIFR[$P_UIFRNUM,MS_Y,TR]+(((M_Y1+M_Y2)/2)-MS_I2CY)
+    $P_UIFR[M_ORIG,MS_X,FI]=0
+    $P_UIFR[M_ORIG,MS_Y,FI]=0
+    $P_UIFR[M_ORIG,MS_X,RT]=0
+    $P_UIFR[M_ORIG,MS_Y,RT]=0
+    $P_UIFR[M_ORIG,MS_X,SC]=1
+    $P_UIFR[M_ORIG,MS_Y,SC]=1
+    $P_UIFR[M_ORIG,MS_X,MI]=0
+    $P_UIFR[M_ORIG,MS_Y,MI]=0
+   ELSE ; M_ORIG<>$P_UIFRNUM ;origine da modificare diversa da origine attiva
+    $P_UIFR[M_ORIG,MS_X,TR]=$P_UIFR[$P_UIFRNUM,MS_X,TR]+MS_I2CX
+    $P_UIFR[M_ORIG,MS_Y,TR]=$P_UIFR[$P_UIFRNUM,MS_Y,TR]+MS_I2CY
+    $P_UIFR[M_ORIG,MS_X,FI]=0
+    $P_UIFR[M_ORIG,MS_Y,FI]=0
+    $P_UIFR[M_ORIG,MS_X,RT]=0
+    $P_UIFR[M_ORIG,MS_Y,RT]=0
+    $P_UIFR[M_ORIG,MS_X,SC]=1
+    $P_UIFR[M_ORIG,MS_Y,SC]=1
+    $P_UIFR[M_ORIG,MS_X,MI]=0
+    $P_UIFR[M_ORIG,MS_Y,MI]=0
+   ENDIF
+ ELSE ; M_ORIG<0  modifica campo FINE e non tocca gli altri
+    M_ORIG=ABS(M_ORIG)
+    $P_UIFR[M_ORIG,MS_X,FI]=(((M_X1+M_X2)/2)-MS_I2CX)
+    $P_UIFR[M_ORIG,MS_Y,FI]=(((M_Y1+M_Y2)/2)-MS_I2CY)
+ ENDIF
+ENDIF
+;**************************************
+
+TRANS
+CALL AUXOUT ;richiamo ausiliare uscita
+IF MS_ACT==1
+ M=(MS_SOFF)
+ENDIF
+;D=MS_DA
+M17

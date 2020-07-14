@@ -1,0 +1,15 @@
+PROC MS_SAVE(STRING[20] M_TITO,STRING[255] FRASE)
+DEF INT _EC=1
+
+;******************************************
+; CICLO DI SALVATAGGIO DATI RILEVATI
+; SONDA PEZZO
+; SIEMENS 840D/828D  		
+; VER 10.1 15/02/2016   
+;******************************************
+
+STOPRE
+WRITE(_EC,M_TITO,FRASE)
+STOPRE
+M17
+

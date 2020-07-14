@@ -1,0 +1,243 @@
+PROC MS_TXYZ(INT M_NT,INT M_ASSE,REAL M_POS,REAL M_TOLL,STRING[20] M_TITO,INT M_ORIG,INT M_SINCAL,INT M_CHECK,STRING[32] M_TOOLN,INT M_TOOLD,INT M_DUPLO) SAVE
+DEF REAL MS_ABS_INPUT
+DEF REAL M_POS1,M_I,M_DIR
+DEF AXIS MS_AX
+DEF STRING[60] FILEINI
+DEF STRING[60] AUXIN
+DEF STRING[60] AUXOUT
+DEF STRING[60] RICHIAMANTE
+DEF STRING[100] SCRIVI
+DEF INT CODICE, T_INT
+
+;********************************
+; CICLO MISURA SUPERFICIE
+; SIEMENS 840D/828D      	  
+; VER 10.1 15/02/2016   
+;********************************
+
+;** CONTROLLO SE SIMULAZIONE O TEST************
+IF $P_SEARCH OR $P_ISTEST OR $P_SIM OR $P_DRYRUN
+ RET
+ENDIF
+;**********************************************
+IF M_SINCAL==0
+;****CONTROLLO QUAL'E' IL CICLO RICHIAMANTE****
+RICHIAMANTE=$P_PROG[$P_STACK-1]
+IF RICHIAMANTE=="_N_MS_SVRM_SPF"
+ CODICE=1
+ENDIF
+IF RICHIAMANTE=="_N_MS_CORN_SPF"
+ CODICE=1
+ENDIF
+IF RICHIAMANTE=="_N_MS_ANGL_SPF"
+ CODICE=1
+ENDIF
+ENDIF
+;**********************************************
+
+;***** GESTIONE PIU SONDE**********************
+FILEINI="/_N_CUS_DIR/_N_MS_INIS"<<M_NT<<"_SPF"
+AUXIN="/_N_CUS_DIR/_N_MS_IN"<<M_NT<<"_SPF"
+AUXOUT="/_N_CUS_DIR/_N_MS_OUT"<<M_NT<<"_SPF"
+STOPRE
+CALL FILEINI  ;richiamo file ini
+IF ((CODICE==0) AND (MS_ACT==1))
+ M=(MS_SON)
+ G4 F1.2
+ENDIF
+CALL AUXIN    ;richiamo ausiliare ingresso
+;**********************************************
+
+;***** PARAMETRI DEL CICLO********
+IF (MS_X_SHIFT==0) AND (MS_Y_SHIFT==0)		; ADDED FOR TOOL SHIFT
+	MS_D=$TC_DP6[$P_TOOLNO,$P_TOOL]
+ELSE
+	MS_D=MS_R_SPHERE					
+ENDIF
+MS_ABS_INPUT=ABS(MS_INPUTS)
+
+IF ABS(M_ASSE)==1 ;asse di misura X
+ M_POS1=$AA_IW[X]+MS_X_SHIFT
+ MS_AX=MS_X
+ENDIF
+
+IF ABS(M_ASSE)==2 ;asse di misura Y
+ M_POS1=$AA_IW[Y]+MS_Y_SHIFT
+ MS_AX=MS_Y
+ENDIF
+
+IF ABS(M_ASSE)==3 ;asse di misura Z
+ M_POS1=$AA_IW[Z]-MS_L_TOOL
+ MS_AX=MS_Z
+; MS_D=0
+ENDIF
+
+IF M_ASSE<0 ;movimento verso meno
+  M_I=M_POS+MS_CS+MS_D
+  M_DIR=-1
+ENDIF
+IF M_ASSE>0 ;movimento verso piu
+  M_I=M_POS-MS_CS-MS_D
+  M_DIR=1
+ENDIF
+
+;*********************************
+
+;******** inizio misura ***************
+MS_MOVEB(MS_AX,M_I,)
+MS_TCHS(MS_AX,M_DIR)
+MS_MOVEB(MS_AX,M_POS1,)
+;**************************************
+
+IF M_SINCAL==1
+;********calcolo dati del punto********
+
+IF ABS(M_ASSE)==1 ;asse di misura X
+ IF M_DIR>0
+  MSXP[M_NT]=MS_POS1-M_POS+MS_D
+ ELSE
+  MSXM[M_NT]=MS_POS1-M_POS-MS_D
+ ENDIF
+ENDIF
+
+IF ABS(M_ASSE)==2 ;asse di misura Y
+ IF M_DIR>0
+  MSYP[M_NT]=MS_POS1-M_POS+MS_D
+ ELSE
+  MSYM[M_NT]=MS_POS1-M_POS-MS_D
+ ENDIF
+ENDIF
+
+IF ABS(M_ASSE)==3 ;asse di misura Z
+ IF M_DIR>0
+  MSZP[M_NT]=MS_POS1-M_POS+MS_D
+ ELSE
+  MSZM[M_NT]=MS_POS1-M_POS-MS_D
+ ENDIF
+ENDIF
+
+ENDIF
+
+
+IF M_SINCAL==1 GOTOF LBL1
+;********calcolo dati del punto********
+IF ABS(M_ASSE)==1 ;asse di misura X
+ IF M_DIR>0
+  MS_REAL=MS_POS1-MSXP[M_NT]+MS_D
+ ELSE
+  MS_REAL=MS_POS1-MSXM[M_NT]-MS_D
+ ENDIF
+ENDIF
+
+IF ABS(M_ASSE)==2 ;asse di misura Y
+ IF M_DIR>0
+  MS_REAL=MS_POS1-MSYP[M_NT]+MS_D
+ ELSE
+  MS_REAL=MS_POS1-MSYM[M_NT]-MS_D
+ ENDIF
+ENDIF
+
+IF ABS(M_ASSE)==3 ;asse di misura Z
+ IF M_DIR>0
+  MS_REAL=MS_POS1-MSZP[M_NT]+MS_D
+ ELSE
+  MS_REAL=MS_POS1-MSZM[M_NT]-MS_D
+ ENDIF
+ENDIF
+
+MS_ERR=MS_REAL-M_POS
+
+LBL1:
+;**************************************
+
+IF M_SINCAL==1 GOTOF LBL2
+
+;********controllo tolleranza**********
+IF M_TOLL<>0
+ IF ABS(MS_ERR)>=M_TOLL
+  MS_ALM(203)
+ ENDIF
+ENDIF
+;**************************************
+
+;******** Correzione Utensile
+
+IF M_CHECK<=1 GOTOF LBL10
+IF M_DUPLO==0
+M_DUPLO=1
+ENDIF
+
+IF MS_TOOLM==1
+ T_INT=GETT(M_TOOLN,M_DUPLO)
+ IF T_INT==-1 GOTOF ALARM5
+ELSE
+ IF NOT (ISNUMBER(M_TOOLN)) GOTOF ALARM5
+ T_INT=TRUNC(NUMBER(M_TOOLN))
+ENDIF
+
+IF (ABS(M_ASSE)==1) OR (ABS(M_ASSE)==2) ;asse di misura X
+IF M_CHECK==2  ;cor. raggio su geometria 
+ $TC_DP6[T_INT,M_TOOLD]=$TC_DP6[T_INT,M_TOOLD]+(M_DIR*MS_ERR)
+ $TC_DP15[T_INT,M_TOOLD]=0
+ELSE          ;cor. raggio su usura
+ $TC_DP15[T_INT,M_TOOLD]=$TC_DP15[T_INT,M_TOOLD]+(M_DIR*MS_ERR)
+ENDIF
+ENDIF
+
+IF (ABS(M_ASSE)==3)
+IF M_CHECK==2  ;cor. lunghezza su geometria 
+ $TC_DP3[T_INT,M_TOOLD]=$TC_DP3[T_INT,M_TOOLD]+ (M_DIR*MS_ERR)
+ $TC_DP12[T_INT,M_TOOLD]=0
+ELSE          ;cor. lunghezza su usura
+ $TC_DP12[T_INT,M_TOOLD]=$TC_DP12[T_INT,M_TOOLD]+ (M_DIR*MS_ERR)
+ENDIF
+ENDIF
+
+LBL10:
+;********archiviazione dati************
+IF ISNUMBER(M_TITO)<>32
+ MS_REAL=(TRUNC(MS_REAL*1000))/1000
+ MS_ERR=(TRUNC(MS_ERR*1000))/1000
+ STOPRE
+ SCRIVI="(MS_TXYZ)      "<<$A_DAY<<"-"<<$A_MONTH<<"-"<<$A_YEAR<<"  "<<$A_HOUR<<":"<<$A_MINUTE<<":"<<$A_SECOND<<""
+ MS_SAVE(M_TITO,SCRIVI)
+ SCRIVI="P=  "<<MS_REAL<<" E= "<<MS_ERR<<""
+ MS_SAVE(M_TITO,SCRIVI)
+ SCRIVI="______________________END______________________"
+ MS_SAVE(M_TITO,SCRIVI)
+ENDIF
+;**************************************
+
+
+;*******aggiornamento origine**********
+IF M_ORIG<>0
+ IF M_ORIG>0  ; modifica campo GROSSOLANO e resetta gli altri
+   IF M_ORIG==$P_UIFRNUM ;origine da modificare uguale a origine attiva
+    $P_UIFR[M_ORIG,MS_AX,TR]=$P_UIFR[$P_UIFRNUM,MS_AX,TR]+MS_ERR
+    $P_UIFR[M_ORIG,MS_AX,FI]=0
+    $P_UIFR[M_ORIG,MS_AX,RT]=0
+    $P_UIFR[M_ORIG,MS_AX,SC]=1
+    $P_UIFR[M_ORIG,MS_AX,MI]=0
+   ELSE ; M_ORIG<>$P_UIFRNUM ;origine da modificare diversa da origine attiva
+    $P_UIFR[M_ORIG,MS_AX,TR]=$P_UIFR[$P_UIFRNUM,MS_AX,TR]+MS_REAL
+    $P_UIFR[M_ORIG,MS_AX,FI]=0
+    $P_UIFR[M_ORIG,MS_AX,RT]=0
+    $P_UIFR[M_ORIG,MS_AX,SC]=1
+    $P_UIFR[M_ORIG,MS_AX,MI]=0
+   ENDIF
+ ELSE ; M_ORIG<0  ; modifica campo FINE e non tocca gli altri
+     M_ORIG=ABS(M_ORIG)
+    $P_UIFR[M_ORIG,MS_AX,FI]=MS_ERR
+ ENDIF
+ENDIF
+;**************************************
+
+LBL2:
+TRANS
+CALL AUXOUT ;richiamo ausiliare uscita
+IF ((CODICE==0) AND (MS_ACT==1))
+ M=(MS_SOFF)
+ENDIF 
+D=MS_DA
+M17
+

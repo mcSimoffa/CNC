@@ -1,0 +1,14 @@
+T3M6
+D1
+G0G55X0.Y0.
+
+;NCG#MOVI#marpos_s.com#SABI#*NCG;*RO*;*HD*
+;#1#2#1#2#3#*NCG;*RO*;*HD*
+MS_MOVE(1,19,0,50,500)
+;#END#*NCG;*RO*;*HD*
+;NCG#CALI#marpos_s.com#SABI#*NCG;*RO*;*HD*
+;#1#1#6#4#2#*NCG;*RO*;*HD*
+MS_SCAL(2,2,30.001,-4.5,45)
+;#END#*NCG;*RO*;*HD*
+
+M30

@@ -1,0 +1,34 @@
+N1 PROC CHAMF(REAL ZNULL,REAL KATET,REAL DEBT) DISPLOF
+def real rdown,rup,angl,toolkatet
+def int actool,actn
+actool=$p_toolno
+actn=$p_tool
+if $TC_DP1[actool,actn]<>140
+ msg(<<"Type of Tool must be 140 (FaceMill)")
+ m0
+ ret
+endif
+rdown=$TC_DP6[actool,actn];rad Down
+rup=$TC_DP7[actool,actn];rad Up
+angl=$TC_DP11[actool,actn];ang
+if (angl<=0) or (angl>=90)
+ msg(<<"Invalid parametr of Tool:Angle must 0...90")
+ m0
+ ret
+endif
+toolkatet=rup-rdown ;XY katet
+if toolkatet<=0
+ msg(<<"Invalid parametr of Tool:Outside Diametr < Diametr")
+ m0
+ ret
+endif
+if katet>toolkatet-DEBT
+ msg(<<"Very big katet")
+ m0
+ ret
+endif
+g0 z=znull
+g1 z=znull-katet/tan(angl)-DEBT
+offn=DEBT*tan(angl)
+ret
+

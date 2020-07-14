@@ -1,0 +1,51 @@
+;*****************************************
+;       CONFIGURATION FILE              
+; SIEMENS 840D/828D  			 
+; VER 10.1 15/02/2016                  
+;*****************************************
+
+
+MS_SON      =53		; M code probe on
+MS_SOFF     =54		; M code probe off
+MS_INPUTS   =1		; meas input number
+MS_ACT		=1		; probe activated by Marposs Cycle =1. Probe activate by MAIN cycle =0
+MS_Z        =(Z)	; machine z axis label
+MS_X        =(X)	; machine x axis label
+MS_Y        =(Y)	; machine y axis label
+MS_ST       =100	; touch feed
+MS_RAPID    =4000	; rapid feed
+MS_CS       =5		; movement for touch
+MS_R        =5		; movement after touch
+MS_TOOLM	=0		; 0=NO Intelligent tool management , 1=YES Intelligent tool management
+MS_X_SHIFT	=0		; shift stylus x position with sign
+MS_Y_SHIFT	=0		; shift stylus y position with sign
+MS_L_TOOL	=0		; tool length
+MS_R_SPHERE	=0		; radius of the stylus ball
+
+; When MS_X_SHIFT or MS_Y_SHIFT are different to 0, the tool geometry is managed by Marposs cycle. Tool offset 
+; has to be not activated by MAIN program and MS_L_TOOL and MS_R_SPHERE are mandatory
+; 
+; When both MS_X_SHIFT and MS_Y_SHIFT are equal to 0 the tool geometry is taken by tool table. Tool offset has to be activated 
+; by MAIN program
+
+MS_LANG     =2   	;language: 1=italian; 2=english; 3=francais; 4=spanish; 5=german; 6=russian
+MS_DA=$P_TOOL
+IF (MS_X_SHIFT<>0) OR (MS_Y_SHIFT<>0)
+D0 ; se misura con shift correttore disabilitato
+IF MS_L_TOOL==0 GOTOF ALLARME10
+IF MS_R_SPHERE==0 GOTOF ALLARME20
+ENDIF
+IF (MS_X_SHIFT==0) AND (MS_Y_SHIFT==0)
+MS_L_TOOL=0
+MS_R_SPHERE=0
+ENDIF
+GOTOF FINE
+
+ALLARME10:
+MS_ALM(204) ; lunghezza stilo zero
+
+ALLARME20:
+MS_ALM(205) ; raggio sfera zero
+
+FINE:
+M17

@@ -1,0 +1,36 @@
+Def int LPC1
+Def int LPC2
+Def int LPC3
+FFWON
+soft
+D0
+G90
+g54g0f1000
+Z0
+g74 z1=0
+G91g0z1f1000
+g04f1
+z-1
+m00
+for LPC3=1 to 1
+ for LPC1=1 to 1
+  for LPC2=1 to 30
+   g91z-20
+   g4f2
+  endfor
+  z-1
+  g04f1
+  z1
+  g4f2
+  for LPC2=1 to 30
+   g91z20
+   g4f2
+  endfor
+ endfor
+ g0z1
+ g4f1
+ z-1
+ g4f2
+endfor 
+M30
+

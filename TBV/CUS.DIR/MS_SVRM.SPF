@@ -1,0 +1,138 @@
+PROC MS_SVRM(INT M_NT,INT M_ASSE,REAL M_POS,INT M_NUMT1,REAL M_DIST1,INT M_NUMT2,REAL M_DIST2,REAL M_TOLL,STRING[20] M_TITO,INT M_ORIG)
+DEF INT CONTA[3]
+DEF AXIS A_1,A_2
+DEF REAL P_1,P_2,V_M,V_T,V_MAX=-999999999,V_MIN=999999999
+DEF STRING[60] FILEINI
+DEF STRING[60] AUXIN
+DEF STRING[60] AUXOUT
+DEF STRING[100] SCRIVI
+
+;********************************
+; CICLO MISURA SOVRAMETALLO
+; SIEMENS 840D/828D  	         *
+; VER 10.1 15/02/2016           *
+;********************************
+
+;** CONTROLLO SE SIMULAZIONE O TEST************
+IF $P_SEARCH OR $P_ISTEST OR $P_SIM OR $P_DRYRUN
+ RET
+ENDIF
+;**********************************************
+
+;***** GESTIONE PIU SONDE**********************
+FILEINI="/_N_CUS_DIR/_N_MS_INIS"<<M_NT<<"_SPF"
+AUXIN="/_N_CUS_DIR/_N_MS_IN"<<M_NT<<"_SPF"
+AUXOUT="/_N_CUS_DIR/_N_MS_OUT"<<M_NT<<"_SPF"
+STOPRE
+CALL FILEINI  ;richiamo file ini
+IF MS_ACT==1
+ M=(MS_SON)
+ G4 F1.2
+ENDIF
+CALL AUXIN    ;richiamo ausiliare ingresso
+;**********************************************
+
+if abs(m_asse)==1 ;misuro con x
+ A_1=Y
+ A_2=Z
+endif
+
+if abs(m_asse)==2 ;misuro con y
+ A_1=Z
+ A_2=X
+endif
+
+if abs(m_asse)==3 ;misuro con z
+ A_1=X
+ A_2=Y
+endif
+
+P_1=$AA_IM[A_1]
+P_2=$AA_IM[A_2]
+
+_N1:
+CONTA[0]=CONTA[0]+1
+CONTA[1]=CONTA[1]+1
+MS_TXYZ(M_NT,M_ASSE,M_POS,0,"",0,0)
+STOPRE
+ v_t=v_t+MS_real
+ IF v_min>MS_real
+  v_min=MS_real
+ ENDIF
+ IF v_max<MS_real
+  v_max=MS_real
+ ENDIF
+STOPRE
+if conta[1]==M_numt1 gotof _N2
+ G53 g1 ax[A_1]=p_1+conta[1]*m_dist1 f=ms_rapid
+gotob _N1
+
+_N2:
+CONTA[1]=0
+CONTA[2]=CONTA[2]+1
+if conta[2]==M_numt2 gotof _N3
+  G53 g1 ax[A_1]=p_1 ax[a_2]=p_2+conta[2]*m_dist2 f=ms_rapid
+ gotob _N1
+
+_N3:
+G53 g1 ax[a_1]=p_1 ax[a_2]=p_2
+
+MS_MAX=v_max
+MS_MIN=v_min
+MS_MED=v_t/conta[0]
+
+;********controllo tolleranza**********
+IF M_TOLL<>0
+ IF ABS(MS_MAX-MS_MIN)>M_TOLL
+  MS_ALM(203)
+ ENDIF
+ENDIF
+;**************************************
+
+;********archiviazione dati************
+IF ISNUMBER(M_TITO)<>32
+ MS_MAX=(TRUNC(MS_MAX*1000))/1000
+ MS_MIN=(TRUNC(MS_MIN*1000))/1000
+ MS_MED=(TRUNC(MS_MED*1000))/1000
+ STOPRE
+ SCRIVI="(MS_SVRM)      "<<$A_DAY<<"-"<<$A_MONTH<<"-"<<$A_YEAR<<"  "<<$A_HOUR<<":"<<$A_MINUTE<<":"<<$A_SECOND<<""
+ MS_SAVE(M_TITO,SCRIVI)
+ SCRIVI="MAX="<<MS_MAX<<" MIN="<<MS_MIN<<" MED="<<MS_MED<<""
+ MS_SAVE(M_TITO,SCRIVI)
+ SCRIVI="______________________END______________________"
+ MS_SAVE(M_TITO,SCRIVI)
+ENDIF
+;**************************************
+
+;*******aggiornamento origine**********
+IF M_ORIG<>0
+ IF M_ORIG>0  ; modifica campo GROSSOLANO e resetta gli altri
+   IF M_ORIG==$P_UIFRNUM ;origine da modificare uguale a origine attiva
+    $P_UIFR[M_ORIG,M_ASSE,TR]=$P_UIFR[$P_UIFRNUM,M_ASSE,TR]+(MS_MED-M_POS)
+    $P_UIFR[M_ORIG,MS_AX,FI]=0
+    $P_UIFR[M_ORIG,MS_AX,RT]=0
+    $P_UIFR[M_ORIG,MS_AX,SC]=1
+    $P_UIFR[M_ORIG,MS_AX,MI]=0
+   ELSE ; M_ORIG<>$P_UIFRNUM origine da modificare diversa da origine attiva
+    $P_UIFR[M_ORIG,MS_AX,TR]=$P_UIFR[$P_UIFRNUM,MS_AX,TR]+MS_MED
+    $P_UIFR[M_ORIG,MS_AX,FI]=0
+    $P_UIFR[M_ORIG,MS_AX,RT]=0
+    $P_UIFR[M_ORIG,MS_AX,SC]=1
+    $P_UIFR[M_ORIG,MS_AX,MI]=0
+   ENDIF
+ ELSE ; M_ORIG<0   modifica campo FINE e non tocca gli altri
+    M_ORIG=ABS(M_ORIG)
+    $P_UIFR[M_ORIG,MS_AX,FI]=(MS_MED-M_POS)
+ ENDIF
+ENDIF
+;**************************************
+
+
+
+TRANS
+CALL AUXOUT ;richiamo ausiliare uscita
+IF MS_ACT==1
+ M=(MS_SOFF)
+ENDIF
+;D=MS_DA
+M17

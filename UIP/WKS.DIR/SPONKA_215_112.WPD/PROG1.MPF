@@ -1,0 +1,80 @@
+g55
+WORKPIECE(,,,"BOX",0,0,-50,-80,-29,15,60,-30)
+T="FR32Z3"
+m6
+d1
+m3 s1500 g94 f1000
+g0 z100 m8
+x0 y12.5 g41
+z1
+g2 z-37 i=ac(0) j=ac(0) turn=80
+g2 i=ac(0) j=ac(0)
+g1 y40 g40
+g0 z100
+m1
+
+r1=5
+r2=-0.12
+r3=0.5
+offn=r1
+g1 x0 y40
+z1
+g1 z-51
+y13 g41
+while r1>r2
+ r1=r1-r3
+ if r1<r2
+    r1=r2
+ endif
+ g1 x27 offn=r1 rnd=0.5
+ y-13 rnd=0.5
+ x-14
+ g2 y13 cr=13
+ g1 x0
+endwhile
+g1 x30
+  y40 g40
+g0 z100 m9
+m0
+
+T="FR16L54"
+m6
+d1
+m3 s2800 g94 f1000
+g0 z200 m8
+x40 y15
+z1
+g1 z-37.5 f500
+offn=-.2
+x12.5 g41
+y0
+g2 i=ac(0) j=ac(0)
+g1 y-14
+x45 g40
+y40
+z-50.5
+x27 g41
+y-13 rnd=0.5
+ x-14
+ g2 y13 cr=13
+ g1 x27 rnd=.5
+ y10
+ x40 g40
+g0 z100 m9
+m1
+
+T="FSK6"
+m6
+d1
+m3 s3000 g94 f500
+g0 z200
+x-5 y16 m8
+freecf(0,1)
+g1 y12.5
+x0
+g2 i=ac(0) j=ac(0)
+g1 x5
+y16 g40
+g0 z100 
+SUPA Z-10 Y0 M9
+m30

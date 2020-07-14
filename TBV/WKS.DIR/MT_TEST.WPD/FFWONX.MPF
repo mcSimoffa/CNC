@@ -1,0 +1,16 @@
+;NCG#CYC32#toleranz.com#NC1#*NCG;*RO*;*HD*
+;##"Finishing"##5####"No"###################"Yes"##"COMPCAD"##"G642"##"FFWON SOFT"#0#0#1#1#0#2001#2002#2003#0.01#0.1#0.05#0.01#"F"#1#6#1#1#1#0#1#1#0#*NCG;*RO*;*HD*
+FFWON
+;#END#*NCG;*RO*;*HD*
+
+SOFT
+G642
+G91
+G94
+AAA:
+NEWCONF
+G01X40F5000
+G4F0.1
+G01X-40
+G4F0.1
+GOTO AAA

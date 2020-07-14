@@ -1,0 +1,197 @@
+PROC MS_WP(INT M_NT,INT M_TC,REAL M_Z,REAL M_DIA,REAL M_TOLL,INT M_ORIG,INT M_CHECK,STRING[32] M_TOOLN,INT M_TOOLD,INT M_DUPLO) SAVE
+DEF REAL _PP,_PM,MS_ABS_INPUT
+DEF REAL PP_INX,PM_INX,PP_INY,PM_INY
+DEF REAL M_POSZ
+DEF REAL ASSE_PX,ASSE_PY
+DEF STRING[60] FILEINI
+DEF STRING[60] AUXIN
+DEF STRING[60] AUXOUT
+DEF STRING[100] SCRIVI
+DEF INT T_INT
+
+;************************************
+; CICLO DI MISURA WEB-POKET MANUALE
+; SIEMENS 840D/828D  		  
+; VER 10.1 15/02/2016   
+;************************************
+
+;** CONTROLLO SE SIMULAZIONE O TEST************
+IF $P_SEARCH OR $P_ISTEST OR $P_SIM OR $P_DRYRUN
+ RET
+ENDIF
+;**********************************************
+
+;***** GESTIONE PIU SONDE**********************
+FILEINI="/_N_CUS_DIR/_N_MS_INIS"<<M_NT<<"_SPF"
+AUXIN="/_N_CUS_DIR/_N_MS_IN"<<M_NT<<"_SPF"
+AUXOUT="/_N_CUS_DIR/_N_MS_OUT"<<M_NT<<"_SPF"
+STOPRE
+CALL FILEINI  ;richiamo file ini
+IF MS_ACT==1
+ M=(MS_SON)
+ G4 F1.2
+ENDIF
+CALL AUXIN    ;richiamo ausiliare ingresso
+
+;***** PARAMETRI DEL CICLO********
+G1 F=MS_RAPID
+IF (MS_X_SHIFT==0) AND (MS_Y_SHIFT==0)		; ADDED FOR TOOL SHIFT
+	MS_D=$TC_DP6[$P_TOOLNO,$P_TOOL]
+ELSE
+	MS_D=MS_R_SPHERE					
+ENDIF
+
+
+MS_ABS_INPUT=ABS(MS_INPUTS)
+M_POSZ=$AA_IW[MS_Z]-MS_L_TOOL
+ASSE_PX=$AA_IW[MS_X]+MS_X_SHIFT
+ASSE_PY=$AA_IW[MS_Y]+MS_Y_SHIFT
+
+IF ABS(M_TC)==1 ;misuro web
+ PP_INX=-(M_DIA/2)-MS_D-MS_CS
+ PM_INX=(M_DIA/2)+MS_D+MS_CS
+ PP_INY=PP_INX
+ PM_INY=PM_INX
+ENDIF
+
+IF ABS(M_TC)==2 ;misura poket
+ PP_INX=(M_DIA/2)-MS_D-MS_CS
+ PM_INX=-(M_DIA/2)+MS_D+MS_CS
+ PP_INY=PP_INX
+ PM_INY=PM_INX
+ENDIF
+
+IF M_TC<0 GOTOF ASSE_Y
+;________________________________
+;punto X+
+;________________________________
+ASSE_X:
+MS_MMOVEB(MS_X,PP_INX,)
+MS_MOVEB(MS_Y,ASSE_PY,)
+MS_MMOVEB(MS_Z,M_Z,)
+MS_TCHS(MS_X,1)
+_PP=MS_POS1-MSXP[M_NT]
+IF M_TC==1
+ MS_MOVEB(MS_Z,M_POSZ,)
+ENDIF
+
+;________________________________
+;punto X-
+;________________________________
+MS_MOVEB(MS_X,ASSE_PX,)
+MS_MMOVEB(MS_X,PM_INX,)
+MS_MOVEB(MS_Y,ASSE_PY,)
+IF M_TC==1
+MS_MMOVEB(MS_Z,M_Z,)
+ENDIF
+MS_TCHS(MS_X,-1)
+_PM=MS_POS1-MSXM[M_NT]
+ MS_MOVEB(MS_Z,M_POSZ,)
+MS_MOVE(M_NT,ASSE_PX,ASSE_PY,,MS_ST)
+GOTOF CALCOLI
+
+;________________________________
+;punto Y+
+;________________________________
+ASSE_Y:
+MS_MOVEB(MS_X,ASSE_PX,)
+MS_MMOVEB(MS_Y,PP_INY,)
+MS_MMOVEB(MS_Z,M_Z,)
+MS_TCHS(MS_Y,1)
+_PP=MS_POS1-MSYP[M_NT]
+IF M_TC==-1
+ MS_MOVEB(MS_Z,M_POSZ,)
+ENDIF
+
+;________________________________
+;punto Y-
+;________________________________
+MS_MOVEB(MS_Y,ASSE_PY,)
+MS_MOVEB(MS_X,ASSE_PX,)
+MS_MMOVEB(MS_Y,PM_INY,)
+IF M_TC==-1
+MS_MMOVEB(MS_Z,M_Z,)
+ENDIF
+MS_TCHS(MS_Y,-1)
+_PM=MS_POS1-MSYM[M_NT]
+ MS_MOVEB(MS_Z,M_POSZ,)
+MS_MOVE(M_NT,ASSE_PX,ASSE_PY,,MS_ST)
+
+ ;*****calcolo dati elemento***********
+CALCOLI:
+;larghezza
+IF ABS(M_TC)==2
+ MS_REAL=ABS(_PP-_PM)+(MS_D*2)
+ELSE
+ MS_REAL=ABS(_PP-_PM)-(MS_D*2)
+ENDIF
+MS_ERR=MS_REAL-M_DIA
+;**************************************
+
+;********controllo tolleranza**********
+IF M_TOLL<>0
+ IF ABS(MS_ERR)>=M_TOLL
+  MS_ALM(203)
+ ENDIF
+ENDIF
+;**************************************
+;******** Correzione Utensile
+
+IF M_CHECK<=1 GOTOF LBL10
+IF M_DUPLO==0
+M_DUPLO=1
+ENDIF
+
+IF MS_TOOLM==1
+ T_INT=GETT(M_TOOLN,M_DUPLO)
+ IF T_INT==-1 GOTOF ALARM5
+ELSE
+ IF NOT (ISNUMBER(M_TOOLN)) GOTOF ALARM5
+ T_INT=TRUNC(NUMBER(M_TOOLN))
+ENDIF
+
+WEB
+IF M_CHECK==2  ;cor. raggio su geometria 
+ $TC_DP6[T_INT,M_TOOLD]=$TC_DP6[T_INT,M_TOOLD]-(MS_ERR/2)
+ $TC_DP15[T_INT,M_TOOLD]=0
+ELSE          ;cor. raggio su usura
+ $TC_DP15[T_INT,M_TOOLD]=$TC_DP15[T_INT,M_TOOLD]-(MS_ERR/2)
+ENDIF
+
+POKET
+
+IF M_CHECK==2  ;cor. raggio su geometria 
+ $TC_DP6[T_INT,M_TOOLD]=$TC_DP6[T_INT,M_TOOLD]+(MS_ERR/2)
+ $TC_DP15[T_INT,M_TOOLD]=0
+ELSE          ;cor. raggio su usura
+ $TC_DP15[T_INT,M_TOOLD]=$TC_DP15[T_INT,M_TOOLD]+(MS_ERR/2)
+ENDIF
+LBL10:
+;*******aggiornamento origine**********
+IF M_ORIG<>0
+;modifica campo GROSSOLANO e resetta gli altri
+     IF M_TC>0
+     ;asse x
+       $P_UIFR[M_ORIG,MS_X,TR]=$P_UIFR[$P_UIFRNUM,MS_X,TR]+(_PP+_PM)/2
+       $P_UIFR[M_ORIG,MS_X,FI]=0
+       $P_UIFR[M_ORIG,MS_X,RT]=0
+       $P_UIFR[M_ORIG,MS_X,SC]=1
+       $P_UIFR[M_ORIG,MS_X,MI]=0
+     ELSE
+     ;asse y
+       $P_UIFR[M_ORIG,MS_Y,TR]=$P_UIFR[$P_UIFRNUM,MS_Y,TR]+(_PP+_PM)/2
+       $P_UIFR[M_ORIG,MS_Y,FI]=0
+       $P_UIFR[M_ORIG,MS_Y,RT]=0
+       $P_UIFR[M_ORIG,MS_Y,SC]=1
+       $P_UIFR[M_ORIG,MS_Y,MI]=0
+     ENDIF
+ENDIF
+;**************************************
+TRANS
+CALL AUXOUT ;richiamo ausiliare uscita
+IF MS_ACT==1
+ M=(MS_SOFF)
+ENDIF
+D=MS_DA
+M17
+

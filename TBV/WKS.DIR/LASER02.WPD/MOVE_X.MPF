@@ -1,0 +1,39 @@
+Def int LPC1
+Def int LPC2
+Def int LPC3
+FFWON
+soft
+
+CYCLE832(0.001,1,1)
+G90
+g509g0f20000
+X0
+;g74 x1=0
+G91g00x-0.5
+g04f1
+x0.5
+m00
+for LPC3=1 to 1
+ for LPC1=1 to 1
+  for LPC2=1 to 60
+
+   g91x20
+   g4f2
+  endfor
+  x0.5
+  g04f1
+  x-0.5
+  g4f3
+  for LPC2=1 to 60
+
+   g91x-20
+   g4f3
+  endfor
+ endfor
+ g0x-1
+ g4f1
+ x1
+ g4f3
+endfor 
+M30
+

@@ -1,0 +1,107 @@
+N1 proc cycplu (real rtp, real Zhigh, real Zlow, real trstep, string[80] traect)
+N2 def real ktab[30,6]
+N3 def int  err,cnt
+N4 def real stAn,finAn,_ar ;angle of start and end point of circle and appertur angle
+N5 def real rCirc,lenCirc
+N6 def real deltaAng
+N7 def real tangenta
+N8 def real Xpoint,Ypoint,oldX,oldY
+N9 def real workAng,absWorkAng
+N10 def real lenLine,workLen
+N11 def real lastF
+N12 def bool firstStep=true
+
+;input parametrs
+;def real trstep=5
+;def real rtp=100
+;def real Zwork=-50
+;def real sdis=51
+;def real with=30
+;def string[64] traect="g1 x100"
+;------------------
+
+N13 lastF=$P_F
+firstStep=true
+N14 contdcon(ktab,0)
+N15 execstring (traect)
+N16 execute(err)
+N17 G0 Z=rtp
+N18 G111 X=ktab[0,1] Y=ktab[0,2]
+N19 g0 rp=0 ap=0
+N20 Z=Zhigh+1
+
+N21 for cnt=1 to ktab[0,5] ;cicl for each elements of contour
+N23  ktab[cnt,0]=ktab[cnt,0] mod 10 ;decode type of moves: G1 or G2 or G3
+ 
+N24 if (ktab[cnt,0]==0) or (ktab[cnt,0]==1) ;G0 or G1 move
+N25   lenLine=sqrt(pot(ktab[cnt,1]-ktab[cnt-1,1])+pot(ktab[cnt,2]-ktab[cnt-1,2]))
+N26   tangenta=atan2(ktab[cnt,2]-ktab[cnt-1,2],ktab[cnt,1]-ktab[cnt-1,1])
+N27   workLen=0
+N28   while workLen<lenLine
+N29     workLen=workLen+trstep
+N30     if workLen>lenLine
+N31        workLen=lenLine
+N32     endif
+N33     Xpoint=ktab[cnt-1,1]+workLen*cos(tangenta)
+N34     Ypoint=ktab[cnt-1,2]+workLen*sin(tangenta)
+N35     msg("Xp="<<Xpoint<<"  Yp="<<Ypoint)
+N36     repeat obr obre
+N37   endwhile
+N38  endif ;G0 or G1 move
+
+N39  if (ktab[cnt,0]==2) or (ktab[cnt,0]==3);g2 g3 move
+N40   stan=atan2(ktab[cnt-1,2]-ktab[cnt,4],ktab[cnt-1,1]-ktab[cnt,3])
+N41   finan=atan2(ktab[cnt,2]-ktab[cnt,4],ktab[cnt,1]-ktab[cnt,3])
+N42   rcirc=sqrt(pot(ktab[cnt,3]-ktab[cnt,1])+pot(ktab[cnt,4]-ktab[cnt,2]))
+N43   if (ktab[cnt,0]==2)
+N44    _ar=stan-finan ;apperturw angle of circle move
+N45   else
+N46    _ar=finan-stan
+N47   endif
+N48   if _ar<0
+N49      _ar=360+_ar
+N50   endif
+N51   lencirc=2*$PI*rcirc*_ar/360 ;long of circle move
+N52   deltaang=trstep*180/$PI/rcirc ;angle step of traectory move
+N53   workAng=0
+N54   while workAng<_ar ;cycle of dividing circles to points
+N55    workAng=workAng+deltaAng
+N56    if workAng>_ar
+N57       workAng=_ar
+N58    endif
+N59    if (ktab[cnt,0]==2) ;angle of current point calculations
+N60      absWorkAng=stAn-workAng
+N61      tangenta=absWorkAng-90
+N62     else
+N63      absWorkAng=stAn+workAng
+N64      tangenta=absWorkAng+90
+N65    endif
+N66    Xpoint=ktab[cnt,3]+rcirc*cos(absWorkAng)
+N67    Ypoint=ktab[cnt,4]+rcirc*sin(absWorkAng)
+N68    msg("Xp="<<Xpoint<<"  Yp="<<Ypoint)
+N69    repeat obr obre
+   ;msg("cnt="<<cnt<<"  _ar="<<_ar<<"  stan="<<stAn<<"  finan="<<finAn)
+N70   endwhile
+N71  endif ;end g2 and g3
+N72 endfor
+N73 g1 AP=0 RP=0
+N74 msg(<<"")
+N75 z=Zhigh+1
+N76 g0 z=rtp
+N77 RET
+
+N78 OBR:
+if firstStep
+ oldX=Xpoint
+ oldY=Ypoint
+ firstStep=false
+endif
+N86 g1 X=Xpoint Y=Ypoint
+N87 z=Zlow+.5
+N88 z=Zlow FB=0.5*lastF
+N89 x=oldX y=oldY z=ic(0.5)
+N90 z=Zhigh FB=2*lastF
+oldX=Xpoint
+oldY=Ypoint
+N91 OBRE:
+

@@ -1,0 +1,118 @@
+proc cyctre (real rtp, real Zwork, real sdis, real trstep,real with, string[80] traect) DISPLOF
+def real ktab[30,6]
+def int  err,cnt
+def real stAn,finAn,_ar ;angle of start and end point of circle and appertur angle
+def real rCirc,lenCirc
+def real deltaAng
+def real tangenta
+def real Xpoint,Ypoint
+def real workAng,absWorkAng
+def real lenLine,workLen
+def real radTroh ;radius of trohoide
+def real lastF
+def bool firstStep=true
+
+;input parametrs
+;def real trstep=5
+;def real rtp=100
+;def real Zwork=-50
+;def real sdis=51
+;def real with=30
+;def string[64] traect="g1 x100"
+;------------------
+
+radTroh=with/2-$p_toolr
+if radTroh<0.05
+  msg("Very big tool for paz "<<with)
+  m0
+  ret
+endif
+lastF=$P_F
+contdcon(ktab,0)
+execstring (traect)
+execute(err)
+G0 Z=rtp
+G111 X=ktab[0,1] Y=ktab[0,2]
+g0 rp=0 ap=0
+Z=zwork+sdis
+G1 Z=ZWORK
+for cnt=1 to ktab[0,5] ;cicl for each elements of contour
+ firstStep=true
+ ktab[cnt,0]=ktab[cnt,0] mod 10 ;decode type of moves: G1 or G2 or G3
+ if (ktab[cnt,0]==0) or (ktab[cnt,0]==1) ;G0 or G1 move
+  lenLine=sqrt(pot(ktab[cnt,1]-ktab[cnt-1,1])+pot(ktab[cnt,2]-ktab[cnt-1,2]))
+  tangenta=atan2(ktab[cnt,2]-ktab[cnt-1,2],ktab[cnt,1]-ktab[cnt-1,1])
+  workLen=0
+  while workLen<lenLine
+    workLen=workLen+trstep
+    if workLen>lenLine
+       workLen=lenLine
+    endif
+    Xpoint=ktab[cnt-1,1]+workLen*cos(tangenta)
+    Ypoint=ktab[cnt-1,2]+workLen*sin(tangenta)
+    MSG("x=X"<<Xpoint<<" y="<<Ypoint)
+    repeat obr obre
+  endwhile
+ endif ;G0 or G1 move
+
+ if (ktab[cnt,0]==2) or (ktab[cnt,0]==3);g2 g3 move
+  stan=atan2(ktab[cnt-1,2]-ktab[cnt,4],ktab[cnt-1,1]-ktab[cnt,3])
+  finan=atan2(ktab[cnt,2]-ktab[cnt,4],ktab[cnt,1]-ktab[cnt,3])
+  rcirc=sqrt(pot(ktab[cnt,3]-ktab[cnt,1])+pot(ktab[cnt,4]-ktab[cnt,2]))
+  if (ktab[cnt,0]==2)
+   _ar=stan-finan ;apperturw angle of circle move
+  else
+   _ar=finan-stan
+  endif
+  if _ar<0
+     _ar=360+_ar
+  endif
+  lencirc=2*$PI*rcirc*_ar/360 ;long of circle move
+  deltaang=trstep*180/$PI/rcirc ;angle step of traectory move
+  workAng=0
+  while workAng<_ar ;cycle of dividing circles to points
+   workAng=workAng+deltaAng
+   if workAng>_ar
+      workAng=_ar
+   endif
+   if (ktab[cnt,0]==2) ;angle of current point calculations
+     absWorkAng=stAn-workAng
+     tangenta=absWorkAng-90
+    else
+     absWorkAng=stAn+workAng
+     tangenta=absWorkAng+90
+   endif
+   Xpoint=ktab[cnt,3]+rcirc*cos(absWorkAng)
+   Ypoint=ktab[cnt,4]+rcirc*sin(absWorkAng)
+   MSG("x=X"<<Xpoint<<" y="<<Ypoint)
+   repeat obr obre
+   ;msg("cnt="<<cnt<<"  _ar="<<_ar<<"  stan="<<stAn<<"  finan="<<finAn)
+  endwhile
+ endif ;end g2 and g3
+endfor
+g1 AP=0 RP=0 F=LASTF FNORM
+z=zWork+sdis
+g0 z=rtp
+RET
+
+OBR:
+if tangenta-135<-360 ;modulo for variable tangenta
+ tangenta=tangenta+360
+endif
+if tangenta+135>360
+ tangenta=tangenta-360
+endif
+g111 X=Xpoint Y=Ypoint
+if firstStep ;preposition for first cut of each traectory
+  g1 AP=tangenta+135 RP=0.8*radTroh
+  firstStep=false
+endif
+g1 AP=tangenta-135 RP=0.8*radTroh
+ct AP=tangenta-105 RP=radtroh Z=Zwork F=lastF*0.85 FNORM
+g3 AP=tangenta-75 F=LASTF*0.9 FLIN
+   AP=tangenta F=LASTF
+   AP=tangenta+75 F=LASTF*1.05;cutting
+   AP=tangenta+105 F=lastF*1.2
+ct AP=tangenta+135 RP=0.8*radTroh Z=IC(0.1) F=lastF*6 FNORM
+OBRE:
+

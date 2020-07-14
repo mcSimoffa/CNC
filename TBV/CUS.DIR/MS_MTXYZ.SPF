@@ -1,0 +1,143 @@
+PROC MS_MTXYZ(INT M_NT,INT M_ASSE,REAL M_POS,INT M_ORIG)
+DEF REAL MS_ABS_INPUT
+DEF REAL M_POS1,M_DIR
+DEF AXIS MS_AX
+DEF STRING[60] FILEINI
+DEF STRING[60] AUXIN
+DEF STRING[60] AUXOUT
+
+
+;********************************
+; CICLO MISURA SUPERFICIE MANUALE
+; SIEMENS 840D/828D      	  
+; VER 10.1 15/02/2016         
+;********************************
+
+;** CONTROLLO SE SIMULAZIONE O TEST************
+IF $P_SEARCH OR $P_ISTEST OR $P_SIM OR $P_DRYRUN
+ RET
+ENDIF
+;**********************************************
+
+;***** GESTIONE PIU SONDE**********************
+FILEINI="/_N_CUS_DIR/_N_MS_INIS"<<M_NT<<"_SPF"
+AUXIN="/_N_CUS_DIR/_N_MS_IN"<<M_NT<<"_SPF"
+AUXOUT="/_N_CUS_DIR/_N_MS_OUT"<<M_NT<<"_SPF"
+STOPRE
+CALL FILEINI  ;richiamo file ini
+IF MS_ACT==1
+ M=(MS_SON)
+ G4 F1.2
+ENDIF
+CALL AUXIN    ;richiamo ausiliare ingresso
+;**********************************************
+
+;***** PARAMETRI DEL CICLO********
+IF (MS_X_SHIFT==0) AND (MS_Y_SHIFT==0)		
+	MS_D=$TC_DP6[$P_TOOLNO,$P_TOOL]
+ELSE
+	MS_D=MS_R_SPHERE					
+ENDIF
+MS_ABS_INPUT=ABS(MS_INPUTS)
+
+IF ABS(M_ASSE)==1 ;asse di misura X
+ M_POS1=$AA_IW[X]+MS_X_SHIFT
+ MS_AX=MS_X
+ENDIF
+
+IF ABS(M_ASSE)==2 ;asse di misura Y
+ M_POS1=$AA_IW[Y]+MS_Y_SHIFT
+ MS_AX=MS_Y
+ENDIF
+
+IF ABS(M_ASSE)==3 ;asse di misura Z
+ M_POS1=$AA_IW[Z]-MS_L_TOOL
+ MS_AX=MS_Z
+; MS_D=0
+ENDIF
+
+IF M_ASSE<0 ;movimento verso meno
+  M_DIR=-1
+ENDIF
+
+IF M_ASSE>0 ;movimento verso piu
+   M_DIR=1
+ENDIF
+
+;******** inizio misura ***************
+MS_ABS_INPUT=ABS(MS_INPUTS)
+G91 
+G1 MEAS=MS_INPUTS G60 F=MS_ST AX[MS_AX]=M_DIR*(M_POS*2)
+STOPRE
+IF $AC_MEA[MS_ABS_INPUT]==0
+ MS_ALM(201)
+ENDIF
+
+IF MS_AX==X
+	MS_POS1=$AA_MW[MS_AX]+MS_X_SHIFT
+ENDIF
+IF MS_AX==Y
+	MS_POS1=$AA_MW[MS_AX]+MS_Y_SHIFT
+ENDIF
+
+IF MS_AX==Z
+	MS_POS1=$AA_MW[MS_AX]-MS_L_TOOL
+ENDIF
+
+AX[MS_AX]=IC(-M_DIR*MS_R) F=MS_RAPID
+STOPRE
+G90
+MS_MOVEB(MS_AX,M_POS1,) ; Torna alla posizione di partenza
+
+;********calcolo dati del punto********
+IF ABS(M_ASSE)==1 ;asse di misura X
+ IF M_DIR>0
+  MS_REAL=MS_POS1-MSXP[M_NT]+MS_D
+ ELSE
+  MS_REAL=MS_POS1-MSXM[M_NT]-MS_D
+ ENDIF
+ENDIF
+
+IF ABS(M_ASSE)==2 ;asse di misura Y
+ IF M_DIR>0
+  MS_REAL=MS_POS1-MSYP[M_NT]+MS_D
+ ELSE
+  MS_REAL=MS_POS1-MSYM[M_NT]-MS_D
+ ENDIF
+ENDIF
+
+IF ABS(M_ASSE)==3 ;asse di misura Z
+ IF M_DIR>0
+  MS_REAL=MS_POS1-MSZP[M_NT]+MS_D
+ ELSE
+  MS_REAL=MS_POS1-MSZM[M_NT]-MS_D
+ ENDIF
+ENDIF
+
+;*******aggiornamento origine**********
+IF M_ORIG<>0
+; modifica solo campo GROSSOLANO e resetta gli altri
+   IF M_ORIG==$P_UIFRNUM ;origine da modificare uguale a origine attiva
+    $P_UIFR[M_ORIG,MS_AX,TR]=$P_UIFR[$P_UIFRNUM,MS_AX,TR]+MS_REAL
+    $P_UIFR[M_ORIG,MS_AX,FI]=0
+    $P_UIFR[M_ORIG,MS_AX,RT]=0
+    $P_UIFR[M_ORIG,MS_AX,SC]=1
+    $P_UIFR[M_ORIG,MS_AX,MI]=0
+   ELSE ; M_ORIG<>$P_UIFRNUM ;origine da modificare diversa da origine attiva
+    $P_UIFR[M_ORIG,MS_AX,TR]=$P_UIFR[$P_UIFRNUM,MS_AX,TR]+MS_REAL
+    $P_UIFR[M_ORIG,MS_AX,FI]=0
+    $P_UIFR[M_ORIG,MS_AX,RT]=0
+    $P_UIFR[M_ORIG,MS_AX,SC]=1
+    $P_UIFR[M_ORIG,MS_AX,MI]=0
+   ENDIF
+ENDIF
+;**************************************
+
+TRANS
+CALL AUXOUT ;richiamo ausiliare uscita
+IF MS_ACT==1
+ M=(MS_SOFF)
+ENDIF 
+D=MS_DA
+M17
+

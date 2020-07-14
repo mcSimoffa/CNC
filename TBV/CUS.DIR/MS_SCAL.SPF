@@ -1,0 +1,184 @@
+PROC MS_SCAL(INT M_NT,INT M_TC,REAL M_DIA,REAL M_Z,REAL M_ANGL) SAVE
+DEF REAL _ZM,_ZP,_XP,_XM,_YP,_YM,MS_ABS_INPUT
+DEF REAL PP_INX,PM_INX,PP_INY,PM_INY
+DEF REAL M_POSZ
+DEF STRING[60] FILEINI
+DEF STRING[60] AUXIN
+DEF STRING[60] AUXOUT
+
+;********************************
+; CICLO DI CALIBRAZIONE PER SONDA
+; SIEMENS 840D/828D  		
+; VER 10.1 15/02/2016   
+;********************************
+
+;** CONTROLLO SE SIMULAZIONE O TEST************
+IF $P_SEARCH OR $P_ISTEST OR $P_SIM OR $P_DRYRUN
+ RET
+ENDIF
+;**********************************************
+
+;***** GESTIONE PIU SONDE**********************
+FILEINI="/_N_CUS_DIR/_N_MS_INIS"<<M_NT<<"_SPF"
+AUXIN="/_N_CUS_DIR/_N_MS_IN"<<M_NT<<"_SPF"
+AUXOUT="/_N_CUS_DIR/_N_MS_OUT"<<M_NT<<"_SPF"
+STOPRE
+CALL FILEINI  ;richiamo file ini
+IF MS_ACT==1
+M=(MS_SON)
+G4 F1.2
+ENDIF
+
+CALL AUXIN    ;richiamo ausiliare ingresso
+;**********************************************
+
+;***** PARAMETRI DEL CICLO********
+G1 F=MS_RAPID
+IF (MS_X_SHIFT==0) AND (MS_Y_SHIFT==0)		; ADDED FOR TOOL SHIFT
+	MS_D=$TC_DP6[$P_TOOLNO,$P_TOOL]
+ELSE
+	MS_D=MS_R_SPHERE					
+ENDIF
+
+MS_ABS_INPUT=ABS(MS_INPUTS)
+M_POSZ=$AA_IW[MS_Z]-MS_L_TOOL
+
+IF M_TC==1 ;sto usando un perno
+ PP_INX=-(M_DIA/2)-MS_D-MS_CS
+ PM_INX=(M_DIA/2)+MS_D+MS_CS
+ PP_INY=PP_INX
+ PM_INY=PM_INX
+ENDIF
+
+IF M_TC==2 ;sto usando un foro
+ PP_INX=(M_DIA/2)-MS_D-MS_CS
+ PM_INX=-(M_DIA/2)+MS_D+MS_CS
+ PP_INY=PP_INX
+ PM_INY=PM_INX
+ENDIF
+
+;********************************
+G17
+AROT RPL=M_ANGL
+
+;***** ADDED FOR SHIFT STYLUS
+IF M_ANGL<>0
+	MS_X_ANGL=((MS_X_SHIFT*COS(M_ANGL))+(MS_Y_SHIFT*SIN(M_ANGL)))
+	MS_Y_ANGL=(-(MS_X_SHIFT*SIN(M_ANGL))+(MS_Y_SHIFT*COS(M_ANGL)))
+	MS_X_SHIFT=MS_X_ANGL
+	MS_Y_SHIFT=MS_Y_ANGL
+ENDIF
+; ***** END ADDED FOR SHIFT STYLUS
+stopre
+;________________________________
+;calibrazione lunghezza in Z-
+;________________________________
+MS_MOVEB(MS_Z,MS_CS,)
+MS_TCHS(MS_Z,-1)
+_ZM=MS_POS1
+;G1 G90 G60 F=MS_RAPID AX[MS_Z]=M_POSZ
+MS_MOVEB(MS_Z,M_POSZ,MS_RAPID)
+stopre
+;________________________________
+;calibrazione X+
+;________________________________
+MS_MOVEB(MS_X,PP_INX,)
+MS_MOVEB(MS_Y,0,)
+MS_MOVEB(MS_Z,M_Z-MS_D,)
+MS_TCHS(MS_X,1)
+_XP=MS_POS1
+IF M_TC<>2
+ MS_MOVEB(MS_Z,M_POSZ,)
+ENDIF
+
+;________________________________
+;calibrazione X-
+;________________________________
+MS_MOVEB(MS_X,PM_INX,)
+MS_MOVEB(MS_Y,0,)
+MS_MOVEB(MS_Z,M_Z-MS_D,)
+MS_TCHS(MS_X,-1)
+_XM=MS_POS1
+IF M_TC<>2
+ MS_MOVEB(MS_Z,M_POSZ,)
+ENDIF
+MS_CX=(_XP+_XM)/2
+
+;________________________________
+;calibrazione Y+
+;________________________________
+MS_MOVEB(MS_X,MS_CX,)
+MS_MOVEB(MS_Y,PP_INY,)
+MS_MOVEB(MS_Z,M_Z-MS_D,)
+MS_TCHS(MS_Y,1)
+_YP=MS_POS1
+IF M_TC<>2
+ MS_MOVEB(MS_Z,M_POSZ,)
+ENDIF
+
+;________________________________
+;calibrazione Y-
+;________________________________
+MS_MOVEB(MS_X,MS_CX,)
+MS_MOVEB(MS_Y,PM_INY,)
+MS_MOVEB(MS_Z,M_Z-MS_D,)
+MS_TCHS(MS_Y,-1)
+_YM=MS_POS1
+IF M_TC<>2
+ MS_MOVEB(MS_Z,M_POSZ,)
+ENDIF
+MS_CY=(_YP+_YM)/2
+
+;________________________________
+;calibrazione X+
+;________________________________
+MS_MOVEB(MS_Y,MS_CY,)
+MS_MOVEB(MS_X,PP_INX,)
+MS_MOVEB(MS_Z,M_Z-MS_D,)
+MS_TCHS(MS_X,1)
+_XP=MS_POS1
+IF M_TC<>2
+ MS_MOVEB(MS_Z,M_POSZ,)
+ENDIF
+
+;________________________________
+;calibrazione X-
+;________________________________
+MS_MOVEB(MS_Y,MS_CY,)
+MS_MOVEB(MS_X,PM_INX,)
+MS_MOVEB(MS_Z,M_Z-MS_D,)
+MS_TCHS(MS_X,-1)
+_XM=MS_POS1
+MS_MOVEB(MS_Z,M_POSZ,)
+;AX[MS_X]=0 AX[MS_Y]=0
+MS_MOVEB(MS_X,0,)
+MS_MOVEB(MS_Y,0,)
+
+;*****memorizzazione dati tastatore****
+STOPRE
+IF M_TC==1 ;perno
+ MSXP[M_NT]=_XP+(M_DIA/2)+MS_D
+ MSXM[M_NT]=_XM-(M_DIA/2)-MS_D
+ MSYP[M_NT]=_YP+(M_DIA/2)+MS_D
+ MSYM[M_NT]=_YM-(M_DIA/2)-MS_D
+ MSZP[M_NT]=_ZP
+ MSZM[M_NT]=_ZM-MS_D
+ENDIF
+IF M_TC==2
+ MSXP[M_NT]=_XP-(M_DIA/2)+MS_D
+ MSXM[M_NT]=_XM+(M_DIA/2)-MS_D
+ MSYP[M_NT]=_YP-(M_DIA/2)+MS_D
+ MSYM[M_NT]=_YM+(M_DIA/2)-MS_D
+ MSZP[M_NT]=_ZP
+ MSZM[M_NT]=_ZM-MS_D
+ENDIF
+;**************************************
+
+TRANS
+CALL AUXOUT ;richiamo ausiliare uscita
+IF MS_ACT==1
+M=(MS_SOFF)
+ENDIF
+D=MS_DA
+M17
+

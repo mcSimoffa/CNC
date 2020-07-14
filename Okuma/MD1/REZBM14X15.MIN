@@ -1,0 +1,15 @@
+(rezb M16x1.5 left)
+G50 S1000
+T151215 (vnutr rezb derjavka plastina k operatoru)
+N55 G0 Z30
+G97 S500 M4
+X20
+Z5 M8
+G71 X12 Z-26 B60 D1 U.04 H2 F1.5 M32 M75
+N56 G0 Z5
+X20
+G33 X12 Z-26 F1.5
+G0 Z20 M9
+X300 Z400
+M30
+

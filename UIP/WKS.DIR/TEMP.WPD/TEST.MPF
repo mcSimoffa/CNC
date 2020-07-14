@@ -1,0 +1,26 @@
+G54
+
+WORKPIECE(,"",,"RECTANGLE",64,100,0,0,500,450)
+T1M6
+S500M3
+F200
+G0X0Y0
+G0Z493
+G1Z453F200
+E_LAB_A_QWERTY: ;#SM Z:2
+;#7__DlgK contour definition begin - Don't change!;*GP*;*RO*;*HD*
+G17 G90 DIAMOF;*GP*
+G0 X0 Y0 ;*GP*
+G3 I=AC(-50) J=AC(0) ;*GP*
+G2 I=AC(50) J=AC(0) ;*GP*
+;CON,0,0.0000,2,2,MST:0,0,AX:X,Y,I,J,TRANS:1;*GP*;*RO*;*HD*
+;S,EX:0,EY:0;*GP*;*RO*;*HD*
+;ACCW,EX:0,EY:0,CX:-50,RAD:50;*GP*;*RO*;*HD*
+;ACW,EX:0,EY:0,CX:50,RAD:50;*GP*;*RO*;*HD*
+;#End contour definition end - Don't change!;*GP*;*RO*;*HD*
+E_LAB_E_QWERTY:
+
+
+G0Z600
+M30
+

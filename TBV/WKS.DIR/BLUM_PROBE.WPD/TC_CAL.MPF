@@ -1,0 +1,8 @@
+
+;NCG#QSCAL#bguiqs.com#PRGCODE2#*NCG;*RO*;*HD*
+;##"Angle offset Z"##3#1#2##"\\"#""#"png"#"png"#1#1#100#0#*NCG;*RO*;*HD*
+G55
+BL9700(,,,,-10,,,,,,,,,,,1)
+;#END#*NCG;*RO*;*HD*
+M30
+

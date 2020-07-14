@@ -1,0 +1,30 @@
+G54
+N2 WORKPIECE(,"",,"BOX",48,5,-170,-80,-2,2,889,-254)
+T="FR52"
+M6
+D1
+M3 S1300 F1000
+G0 X-30 Y-280
+
+; CTEHKA 
+r1=0
+r2=-32
+r3=4
+r4=0.25
+g0 z10
+
+while r1>r2
+r1=r1-r3
+if r1<r2
+r1=r2
+endif
+g0 Y-280
+z=r1
+g1 X=r4-$p_toolr
+Y30
+X=ic(-2)
+endwhile
+g0 Z300 M5
+M9
+M30
+

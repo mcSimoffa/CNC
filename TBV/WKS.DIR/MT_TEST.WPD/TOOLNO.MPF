@@ -1,0 +1,3 @@
+;R40=$TC_DP1[$P_TOOLNO,1]
+R41=$C_T
+M30

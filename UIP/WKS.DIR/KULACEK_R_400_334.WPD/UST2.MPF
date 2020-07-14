@@ -1,0 +1,232 @@
+;podkladki 30mm
+;nol po x na -45 OT PAVOGO KONCA TISKOV
+N10 G54 ;nol na dne tiskov
+STOPRE
+R1=$P_UIFR[1,X,TR]+$P_UIFR[1,X,FI]
+R2=$P_UIFR[1,Y,TR]+$P_UIFR[1,Y,FI]
+R3=$P_UIFR[1,Z,TR]+$P_UIFR[1,Z,FI]
+STOPRE
+$P_UIFR[2]=CTRANS(X,R1-44.9,Y,R2,Z,R3+30+35-0.03)
+G55
+STOPRE
+N10 G55
+WORKPIECE(,,,"BOX",0,15,-50,-80,-90,1,90,-32)
+T="FR35HFM"
+m6
+d1
+m3 s1000 g94 f3000
+g0 z100 m8
+r1=15
+r2=0.5
+r3=0.5
+g0 x-110 y-6
+z=r1+5
+while r1>r2
+ r1=r1-r3
+ if r1<r2
+    r1=r2
+ endif
+ g1 x-110 y-4 z=r1
+ x5
+ y-28
+ x-110
+endwhile
+g0 z100 m9
+m1
+
+
+N11 T="FR32Z3"
+N12 M6
+N13 D1
+N14 S1500 M3 G94 F1000
+N15 g0 z100 m8
+r1=-90
+r2=-34.5
+r3=0.5
+g0 x=r1-$p_toolr y-36
+z1
+while r1<r2
+ r1=r1+r3
+ if r1>r2
+    r1=r2
+ endif
+ g1 x=r1-$p_toolr z-9.7
+ y5
+ x=ic(-1) z=ic(1)
+ y-36
+endwhile
+g0 z50
+m1
+
+r1=-34.5
+r2=-30.5
+r3=1 
+r4=r1
+g0 x=r1-$p_toolr y-36
+z1
+while r1<r2
+ r1=r1+r3
+ if r1>r2
+    r1=r2
+ endif
+ g1 x=r1-$p_toolr z=-9.7+(r1-r4)
+ y5
+ x=ic(-1) z=ic(1)
+ y-36
+endwhile
+g0 z50
+m1
+
+r1=2
+r2=0.5
+r3=1
+offn=r1
+g0 x=-30 y30
+z1
+g1 z-6
+y0 g41
+while r1>r2
+ r1=r1-r3
+ if r1<r2
+    r1=r2
+ endif
+ g1 x-15 offn=r1
+ x0 chr=3
+ y-30 chr=3
+ x-30 RND=.5
+ y0 chr=3
+endwhile
+x0
+y25 g40
+N17 G0 z100 M9
+N18 SUPA Y0
+N19 M1
+
+T="FR50"
+m6
+d1
+m3 s1500 g94 f600
+g0 z100
+x-60 y-10 m8
+z2
+g1 z0
+x26
+g0 z50
+x-82 y-60
+z-5
+g1 z-10.1
+y30
+g0 z10
+x=-34-$p_toolr y-60
+z-5
+g1 z-10.1
+y30
+g0 z100 m9
+m1
+
+N20 T="FR16L54"
+N21 M6
+N22 D1
+N23 S2800 M3 G94 F800
+N24 g0 z100 M8
+offn=0
+x-30 y15
+z1
+g1 z-6
+kntq:
+y0 g41
+x0 chr=3
+y-30 chr=3
+x-30 RND=.5
+y0 chr=3
+x5
+y15 g40
+g0 z100
+kntqe:
+x-15 y-15
+;RASKATKA(RTP,SDIS,ZNULL,GLUBINA,DST,DFIN,TURNFACTOR)
+N17 RASKATKA(50,1,0,33,17,21.7,8)
+N26 G0 z100 M9
+N27 SUPA Y0
+N28 M1
+
+N29 T="DISK18"
+N30 M6
+N31 D1
+N32 S4000 M3 G94 f400
+N33 M8
+trans x-15 y-15
+g0 x0 y0
+Z5
+r1=-26
+r2=-9
+r3=0.7
+while r1<r2
+ r1=r1+r3
+ if r1>r2
+    r1=r2
+ endif
+ g0 x0 y0
+ g1 z=r1
+ g347 disr=.5 x0 y11.6 g41
+ g3 i=ac(0) j=ac(0)
+ g348 disr=.5 x0 y0 g40
+endwhile
+trans
+g0 z100
+m0;SNISIT USILIE SAGIMA
+
+T="SV 4.3"
+m6
+d1
+m3 s400 g95 f.06
+g0 z100 m8
+;(RTP, RETPOS, ZNULL, ZMAX, FIRST, SECOND,DEGRESS, MINSTEP)
+mcall LONGDRILL(100,10,-10,-30,10,5,1,2)
+otvm5: g0 x=-15-30.5 y-18
+otvem5: x=-15-30.5-37 y-18
+mcall
+g0 z100 m9
+m1
+
+N44 T="FSK6"
+N45 m6
+N46 d1
+N47 m3 s5500 g94 f600
+N48 g0 x-30 y5 m8
+N49 freecf(0,.5)
+N50 repeat  kntq kntqe
+N51 G0 Z50
+N52 X-15 y-15
+N53 CFHOLE(100,1,0,.5,22);RTP,SDIS,Z0,KATET,DOTV
+mcall CFHOLE(100,1,-10,1,4.2);RTP,SDIS,Z0,KATET,DOTV
+repeat otvm5 otvem5
+mcall
+g0 z100 m9
+m1
+
+N20 T="FR12Z6"
+N21 M6
+N22 D1
+N23 S3800 M3 G94 f500
+N24 g0 z100
+X-15 y-15 m8
+N17 RASKATKA(50,1,0,20,21.5,22.06,2)
+X-15 y-15
+;RASKATKA(RTP,SDIS,ZNULL,GLUBINA,DST,DFIN,TURNFACTOR)
+N17 RASKATKA(50,1,0,33,21.5,22.05,2)
+N26 G0 z200 M9
+N27 SUPA Y0
+N28 M0 ;ochistka otverstiy
+    
+T="MET5X08"
+m6
+d1
+g0 z100 m8
+MCALL CYCLE84(100,-10,1,,13,0.7,5,,0.8,5,150,150,0,1,0,0,5,1.4,,"ISO_METRIC","M5",,1001,2001001)
+repeat otvm5 otvem5
+mcall
+N75 G0 z200 M9
+N76 SUPA Y0
+N77 M30
+;

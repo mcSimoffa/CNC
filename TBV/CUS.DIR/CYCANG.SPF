@@ -1,0 +1,65 @@
+proc cycang (real rtp, real Zhigh, real Zlow, real rad, real trstep, string[80] traect) DISPLOF
+def real ktab[2,6]
+def int  err
+def real stAn,finAn,_ar ;angle of start and end point of circle and appertur angle
+def real rCirc,lenCirc
+def real deltaAng
+def real tangenta
+def real Xpoint,Ypoint
+def real workAng,absWorkAng
+def real lenLine,workLen,WORKFEED,RCENTR
+if $P_SEARCH ;PROPUSK PRI POISKE KADRA
+ ret
+endif
+if rad<=$p_toolr
+    msg (<<"too BIG TOLL Radius")
+    m0
+    ret
+endif
+WORKFEED=$P_F
+rad=rad-$p_toolr
+contdcon(ktab,0)
+execstring (traect)
+execute(err)
+
+ktab[1,0]=ktab[1,0] mod 10 ;decode type of moves: G1 or G2 or G3
+if (ktab[1,0]==0) or (ktab[1,0]==1) ;G0 or G1 move
+  lenLine=sqrt(pot(ktab[1,1]-ktab[0,1])+pot(ktab[1,2]-ktab[0,2]))
+  tangenta=atan2(ktab[1,2]-ktab[0,2],ktab[1,1]-ktab[0,1])
+  workLen=0
+  g0 z=Zhigh
+  g1 z=Zlow
+  while workLen<lenLine
+    workLen=workLen+trstep
+    if workLen>lenLine
+       workLen=lenLine
+    endif
+    Xpoint=ktab[0,1]+workLen*cos(tangenta)
+    Ypoint=ktab[0,2]+workLen*sin(tangenta)
+    msg("Xp="<<Xpoint<<"  Yp="<<Ypoint)
+    repeat obr obre
+  endwhile
+  g1 ap=0 rp=0 F=WORKFEED
+  z=ZHIGH
+  g0 z=rtp
+  else
+    msg(<<"ONLY linear move allow")
+    m0
+    ret
+ endif ;G0 or G1 move
+RET
+
+OBR:
+if tangenta-135<-360 ;modulo for variable tangenta
+ tangenta=tangenta+360
+endif
+if tangenta+135>360
+ tangenta=tangenta-360
+endif
+RCENTR=rad+(lenline-worklen)/sqrt(2)
+g111 X=Xpoint Y=Ypoint
+g1 AP=tangenta-60 RP=RCENTR
+g3 AP=tangenta+60 F=WORKFEED*RCENTR/(RCENTR+$P_TOOLR)
+F=2*WORKFEED
+OBRE:
+
