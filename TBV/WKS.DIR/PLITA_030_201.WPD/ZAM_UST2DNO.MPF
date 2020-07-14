@@ -1,0 +1,61 @@
+
+N3 WORKPIECE(,,,"BOX",112,1,-61,-80,-5,5,555,-485)
+G55
+T="FR 100"
+m6
+d1
+m3 s500 g94 f500 m8
+;frzerovat do chistogo i korrektirovat Z=0
+CYCLE61(100,1.5,2,0.1,-10,-190,560,-315,1.5,90,0,500,11,0,1,11000)
+g0 z200 m9
+m0
+
+T="FR 100FIN" M6
+N181 Dno:
+r1=-550-$p_toolr
+r2=-312-$p_toolr
+while r1<r2
+ r1=r1+50
+ if r1>r2
+   r1=r2
+ endif
+g0 x700 y=r1
+z1
+g1 z-27.5
+x-75
+g0 z50
+endwhile
+g0 x625 y=-245-$p_toolr
+z1
+g1 z-27.5
+x255
+y-310
+x340
+g0 z50
+x550 y70
+z1
+g1 z-27.5
+y-120
+x-75
+g0 z50
+x500 y75
+z1
+g1 z-27.5
+y0
+y-120
+x450
+y0
+x=345 g41
+y=-55 rnd=2
+x0
+y-120 g40
+y-185 g41
+x455 rnd=2
+y-260
+x570 g40
+y-120
+g0 z100
+N394 G0 Z200 M9 M5
+N395 SUPA Y0
+N396 M0
+M30
