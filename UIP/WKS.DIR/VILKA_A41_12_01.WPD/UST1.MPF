@@ -1,0 +1,20 @@
+g56
+WORKPIECE(,,,"PIPE",0,0,-100,-80,100,24)
+;ustanovka v patrone
+zev
+m0
+T="FR16L57"
+m6
+d1
+m3 s2800 g94 f800
+g0 x65 y0 m8
+z-43
+g1 y27.5 g41 offn=-.01
+x-55
+y0 g40
+y-27 g41
+x55
+y0 g40
+g0 z100 m9
+supa y0
+m30

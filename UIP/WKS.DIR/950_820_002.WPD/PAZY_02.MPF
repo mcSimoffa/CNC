@@ -1,0 +1,45 @@
+N10 G54 ;viravnivanie sprava
+;plitki 40
+STOPRE
+R1=$P_UIFR[1,X,TR]+$P_UIFR[1,X,FI]
+R2=$P_UIFR[1,Y,TR]+$P_UIFR[1,Y,FI]
+R3=$P_UIFR[1,Z,TR]+$P_UIFR[1,Z,FI]
+STOPRE
+$P_UIFR[2]=CTRANS(X,R1-150+55,Y,R2, Z,R3+45+9.75)
+G55
+
+WORKPIECE(,,,"BOX",0,0,-10,-80,0,0,141,-35.6)
+
+T="FR4"
+m6
+d1
+m3 s6000 g94 f800
+g0 z200 m8
+g0 x-4 y-1
+;cyctr (rtp, Zwork, sdis, trstep,with, string[50] traect,char prof)
+N150 CYCTRE(50,-4.1,5,0.15,6,"g1 x22")
+g0 x-4 y-24
+N150 CYCTRE(50,-4.1,5,0.15,6,"g1 x22")
+M1
+offn=0.1
+mern:
+g0 x-4 y0
+g1 z-4.1 f400
+y-4 g41
+x24 rnd=2.5
+y3
+x20 g40
+g0 z20
+y-30
+g1 z-4.1
+x25 g41
+y-21 rnd=2.5
+x-4
+y-25 g40
+g0 z50
+merne:
+offn=-0.016
+repeat mern merne
+g0 SUPA z-20
+supa y0 M9
+m30

@@ -1,0 +1,43 @@
+g56
+WORKPIECE(,,,"BOX",0,0,-100,-80,0,50,120,-100)
+;ustanovka  tiskax
+T="FR16L57"
+m6
+d1
+m3 s2800 g94 f800
+g0 x20 y0 m8
+N166 HELIC(100,1,0,2,18,20) ;RTP,SDIS,ZNULL,GLUBINA,DOTV,TURNFACTOR
+g0 z100 m9
+m0
+
+T="FSK8"
+m6
+d1
+m3 s3000 g95 f.03
+g0 x20 y0 m8
+z0
+g1 z-4
+g0 z100 m9
+m0
+
+T="SV 17.5"
+m6
+d1
+m3 s150 g95 f0.12
+g0 x20 y0 m8
+z0
+g1 z-32
+z0 f3
+g0 z100 m9
+m0
+
+T="FR16L57"
+m6
+d1
+m3 s2800 g94 f800
+g0 x20 y0 m8
+;RASKATKA(RTP,SDIS, ZNULL, GLUBINA, DST, DFIN,TURNFACTOR)
+N174 MCALL RASKATKA(150,1,0,30,17.5,20,5)
+g0 z100 m9
+supa y0
+m30

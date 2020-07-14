@@ -1,0 +1,11 @@
+G56 ;V KULACHKOVOM PATRONE
+WORKPIECE(,,,"CYLINDER",64,0,-40,-80,34)
+T="FR16L57"
+M6
+D1
+M3 S2800 G94 F1000
+G0 X-22.5 Y-24 Z20 M8
+;cyctre (rtp, Zwork, sdis, trstep,with, string[50] traect)
+N41 CYCTRE(150,-14.8,16,0.25,20.15,"QUAD")
+M30
+

@@ -1,0 +1,29 @@
+;plitki 26
+;plitka sleva 80
+N10 G54 ;nol na dne tiskov
+STOPRE
+R1=$P_UIFR[1,X,TR]+$P_UIFR[1,X,FI]
+R2=$P_UIFR[1,Y,TR]+$P_UIFR[1,Y,FI]
+R3=$P_UIFR[1,Z,TR]+$P_UIFR[1,Z,FI]
+STOPRE
+$P_UIFR[2]=CTRANS(X,R1-150+80,Y,R2, Z,R3+26+33)
+G55
+
+WORKPIECE(,,,"BOX",0,10,-80,-80,0,0,150,-80)
+T="FR8L30"
+m6
+d1
+m3 s4000 g94 f500 m8
+r1=-18
+sloy:
+g0 x82 y10 g41
+z1
+g1 z=r1
+y-60
+g0 z10
+x88 g40
+endsloy:
+r1=-33
+repeat sloy endsloy
+g0 z200 m9
+m30

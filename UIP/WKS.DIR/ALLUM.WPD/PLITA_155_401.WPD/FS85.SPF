@@ -1,0 +1,9 @@
+g0 z1
+g1 z=-7-3
+g91 x.5
+g3 i-.5 j0 z-1 turn=2
+g3 i-.5 j0
+g1 x-.5
+g90 g0 z50
+ret
+

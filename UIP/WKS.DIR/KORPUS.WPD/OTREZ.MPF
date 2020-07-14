@@ -1,0 +1,33 @@
+;plitki 20
+;plitka sleva 80
+N10 G54 ;nol na dne tiskov
+STOPRE
+R1=$P_UIFR[1,X,TR]+$P_UIFR[1,X,FI]
+R2=$P_UIFR[1,Y,TR]+$P_UIFR[1,Y,FI]
+R3=$P_UIFR[1,Z,TR]+$P_UIFR[1,Z,FI]
+STOPRE
+$P_UIFR[2]=CTRANS(X,R1-150+80,Y,R2, Z,R3+20+33)
+G55
+
+WORKPIECE(,,,"BOX",0,10,-80,-80,0,0,150,-80)
+T="FR12L56"
+m6
+d1
+m3 s4000 g94 f800 m8
+r1=-18
+sloy:
+g0 x92 y-64
+;cyctr (rtp, Zwork, sdis, trstep,with, string[50] traect,char prof)
+N150 CYCTRE(50,r1,1-r1,0.5,15,"g1 y2")
+g0 x84 y10 g41
+z1
+g1 z=R1
+y-60
+g0 z10
+x88 g40
+endsloy:
+r1=-33
+repeat sloy endsloy
+g0 z200 m9
+SUPA Y0
+m30
