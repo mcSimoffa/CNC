@@ -1,0 +1,139 @@
+;zagotovku pereustanovit X=121 Y=77 Z=67
+;30MM PLITKI
+;SLEVA 16MM
+;PROTIV CHASOV NA 90 PO Y
+;PO CHASOVOY PO X NA 90
+G54
+STOPRE
+N3 R1=$P_UIFR[1,X,TR]+$P_UIFR[1,X,FI]
+N4 R2=$P_UIFR[1,Y,TR]+$P_UIFR[1,Y,FI]
+N5 R3=$P_UIFR[1,Z,TR]+$P_UIFR[1,Z,FI]
+N6 STOPRE
+N7 $P_UIFR[2]=CTRANS(X,R1-150+120+16,Y,R2-1, Z,R3+30+65)
+N8 G55
+N9 STOPRE
+N10 G55
+N11 WORKPIECE(,,,"BOX",0,1,-67,-80,1,1,-122,-77)
+T="WSX445_080"
+N13 M6
+N14 d1
+N15 m3 s600 g94 f500
+G0 z100
+M8
+N17 CYCLE61(100,2,1,0,-121,1,1,-77,1,40,0.2,500,11,0,1,11000)
+G0 SUPA Z-20
+M9 M1
+
+T="FR50"
+N13 M6
+N14 d1
+N15 m3 s1500 g94 f500
+G0 Z100
+M8
+N17 CYCLE61(100,0.25,1,0,-121,1,1,-80,2,25,0.25,500,12,0,1,11000)
+G0 SUPA Z-20
+M9 M1
+
+T="FR32Z3"
+N13 M6
+N14 d1
+N15 m3 s1500 g94 f500
+G0 Z100
+offn=0.1
+r1=0 r2=-36 r3=9
+about:
+while r1>r2
+ r1=r1-r3
+ if r1<r2
+  r1=r2
+ endif
+g0 x=10+$p_toolr y=10+$p_toolr
+z=r1 M8
+abfa:
+g1 x0 g41
+y-75 rnd=.5
+x-120 rnd=.5
+y0 rnd=.5
+x5
+y=10+$p_toolr g40
+g0 z50
+aboute:
+endwhile
+G0 SUPA Z-20
+M9 M1
+
+T="SV 11.9"
+m6
+d1
+m3 s200 g95 f.12
+g0 x-100 y-37.5
+z20 m8
+g1 z1 fb=3
+z-35 f.12
+z0 f3
+G0 SUPA Z-20
+M9 M1
+
+T="FR16L57"
+m6
+d1
+m3 s2200 g94 f700
+g0 x15 y15
+z-35.5 M8
+offn=0
+repeat abfa aboute
+g0 x-130.5 y-37.5
+;cyctre (rtp, Zwork, sdis, trstep,with, string[50] traect)
+N42 CYCTRE(150,-15,16,.3,20,"G1 x1")
+g0 x-131 y-37.5
+z1
+offn=-.015 ;paz 20H9 mera
+g1 z-15
+y-47.5 g41
+x15
+y-27.5
+x-131
+y-37.5 g40
+G0 SUPA Z-20
+M9 M1
+
+T="FR10L37"
+m6
+d1
+m3 s3700 g94 f1000
+g0 x-100 y-37.5
+g0 z100 m8
+;RASKATKA(RTP,SDIS, ZNULL, GLUBINA, DST, DFIN,TURNFACTOR)
+N391 RASKATKA(50,1,0,26,11.5,13.2,6)
+g0 x-100 y-37.5 S4000 F800
+;cyctre (rtp, Zwork, sdis, trstep,with, string[50] traect)
+N42 CYCTRE(150,-26,12,.2,13.2,"G1 x-21")
+G0 SUPA Z-20
+M9 M1
+
+T="E45X-D06"
+m6
+d1
+m3 s3000 g94 f300
+g0 x10 y10
+g0 z100 m8
+chamf(0,.4,1)
+g1 x0 g41
+y-27.5
+x-120
+y0
+x5
+g0 y10 g40
+g0 z50
+
+g0 x10 y-37.5
+chamf(0,.4,1)
+g1 x0 g41
+y-75
+x-120
+y-47.5
+x10
+y-37.5 g40
+G0 SUPA Z-20
+M9 supa y0
+M30

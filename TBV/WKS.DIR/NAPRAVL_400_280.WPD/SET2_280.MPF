@@ -1,0 +1,197 @@
+;NA KUBIKAH. KREPLENIE PO BOKAM. ZONY KREPLENUYA = 20MM
+N1 G55 ;NOL V VERHNEM LEVOM UGLU DETALI. NE ZAGOTOVKI !!!
+;KASANIE SLEVA VVERHU X=-25 Y=3.5 Z=0.6
+N11 WORKPIECE(,,,"BOX",0,0.5,-10,-80,-25,4,200,-50)
+T="FR32Z3"
+M6
+D1
+M3 S1500 G94 F400
+G0 X24 Y35
+Z1 M8
+G1 Z0
+Y-29
+X132
+Y-50
+Y20
+G0 Z100 M9
+M1
+
+T="SV 9.9"
+m6
+d1
+m3 s250 g95 f.1
+g0 x=146-18 y=27-43
+g0 z1 m8
+g1 z-15
+z1 f1
+g0 z100 m9
+m0
+
+T="SV 5.0"
+m6
+d1
+m3 s400 g95 f.07
+g0 z200 m8
+
+MCALL CYCLE82(50,0,1,,-10,0.1,10,1,11)
+mask: g0 x37.5 y=8-43
+x=37.5+25
+x=37.5+60
+maske: x=37.5+85
+mcall
+g0 z100 m9
+m1
+
+T="FR4"
+m6
+d1
+m3 s4000 g94 f600 M8
+mcall CYCTRE(50,-10,11,0.1,5.1,"g1 x=ic(5)")
+repeat mask maske
+mcall
+g0 z100 m9
+m1
+
+T="FR16L54"
+M6
+D1
+M3 S2500 G94 F1000
+G0 Z100
+X-5 Y20
+Z5 M8
+;VERH
+G1 Z-11
+R1=5
+R2=0
+R3=.3
+WHILE R1>R2
+ R1=R1-R3
+ IF R1<R2
+    R1=R2
+ ENDIF
+ OFFN=R1
+ G0 X-5 
+ G1 Y0 G41
+ X150
+ Y20 G40
+ENDWHILE
+G0 Z50
+
+;SKOS
+X-3.5 Y20
+Z5
+G1 Z-11
+R1=5
+R2=0
+R3=.3
+WHILE R1>R2
+ R1=R1-R3
+ IF R1<R2
+    R1=R2
+ ENDIF
+ OFFN=R1
+ G1 X-3.5 
+ Y-4.4 G41
+ X38.5 Y0.4
+ Y20 G40
+ENDWHILE
+G0 Z50
+
+;NIZ
+X150 Y-63
+Z5
+G1 Z-11
+R1=5
+R2=0
+R3=.3
+WHILE R1>R2
+ R1=R1-R3
+ IF R1<R2
+    R1=R2
+ ENDIF
+ OFFN=R1
+ G0 X150 
+ G1 Y-43 G41
+ X-5
+ Y-63 G40
+ENDWHILE
+G0 Z50
+g0 x12.5 y-60 F1200
+;cyctr (rtp, Zwork, sdis, trstep,with, string[50] traect,char prof)
+N150 CYCTRE(50,-5,6,0.25,31,"G1 Y-4.5")
+G0 X12.5 Y-15
+N150 CYCTRE(50,-5,6,0.25,31,"G1 X147")
+m1
+
+
+T="FR8L30"
+m6
+d1
+m3 s3000 g94 f1000
+g0 x=146-18 y=27-43 M8
+;RASKATKA(RTP,SDIS,ZNULL,GLUBINA,DST, DFIN,TURNFACTOR)
+N120 RASKATKA(50,1,0,10,10,16.1,15)
+g0 x=146-18 y=27-43 M8
+CYCTRE(50,-10,11,0.2,12.12,"paz_spf")
+g0 supa z0
+
+T="FSK6"
+m6
+d1
+m3 s5000 g94 f700
+g0 z200 m8
+g0 x=146-18 y=27-43
+freecf(-5,.25)
+g1 y-10 g41
+x25
+g3 x10 y-25 cr=15
+g1 y-29
+g3 x22 cr=6
+g1 y-25
+g2 x25 y-22 cr=3
+g1 x=146-18
+y=27-43 g40
+g0 z50
+g0 x=146-18 y=27-43
+cfhole(50,1,-5,0.25,16);RTP,SDIS,ZNULL,KATET,DOTV
+g0 x37.5 y=8-43
+freecf(0,.25)
+repeat paz5 paze5
+x=37.5+25
+freecf(0,.25)
+repeat paz5 paze5
+x=37.5+60
+freecf(0,.25)
+repeat paz5 paze5
+x=37.5+85
+freecf(0,.25)
+repeat paz5 paze5
+g0 z200
+supa z0 M9
+supa y0
+
+m0;perestavit prihvaty
+
+T="FR10L32"
+m6
+d1
+m3 s3000 g94 f1000
+g0 z200
+x-7 y-55 m8
+CYCTRE(50,-10,11,0.2,14,"g1 y1")
+g0 x153 y8
+CYCTRE(50,-10,11,0.2,14,"g1 y-44")
+g0 z100
+SUPA Y0
+M30
+
+paz5:
+g1 g91 y2.5 g41
+g3 y-5 cr=2.5
+g1 x5
+g3 y5 cr=2.5
+g1 x-5
+y-2.5 g40
+g0 z50 g90
+paze5:
+

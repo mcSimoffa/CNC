@@ -1,0 +1,76 @@
+G54
+WORKPIECE(,,,"BOX",0,0,-26,-80,-15,0,30,-90)
+T="FR8L30"
+M6
+D1
+M3 S2500 F1800
+M8
+GOTO PLANES
+CYCLE62("RR15",1,,)
+CYCLE72("",100,0,0.5,-10,1,0,0,800,200,101,41,2,5,0.1,2,5,0,0.5,0.5,101,1011,100)
+M1
+CYCLE62("R_15",1,,)
+CYCLE72("",10,-10,0.5,-21,1,0,0,800,200,1,41,2,5,0.1,2,5,0,0.5,0.5,101,1011,100)
+PLANES:
+G0 Z100
+X-40 Y-3
+Z-8
+G1 Z-10 F600
+X37
+Y-9
+X-40
+G0 Z100
+M9
+M0
+
+T="FASK"
+M6
+D1
+M3 S2500 F600
+M8
+CYCLE62("RR15",1,,)
+CYCLE72("",50,0,3,-35,1,0,0,600,100,105,41,2,5,0.1,2,5,0,0.5,1,101,1011,100)
+M9
+G0 SUPA Z0
+SUPA Y0
+M30
+
+E_LAB_A_RR15: ;#SM Z:5
+;#7__DlgK contour definition begin - Don't change!;*GP*;*RO*;*HD*
+G17 G90 DIAMOF;*GP*
+G0 X-15 Y-29 ;*GP*
+G2 X-7.483 Y-16 I=AC(0) J=AC(-29) ;*GP*
+G1 X-6.1 ;*GP*
+Y-40 ;*GP*
+G3 X6.1 I=AC(0) J=AC(-40) ;*GP*
+G1 Y-16 ;*GP*
+X7.483 ;*GP*
+G2 X15 Y-29 I=AC(0) J=AC(-29) ;*GP*
+G1 Y-60 ;*GP*
+G2 X-15 I=AC(0) J=AC(-60) ;*GP*
+G1 Y-29 ;*GP*
+;CON,0,0.0000,6,6,MST:0,0,AX:X,Y,I,J,TRANS:1;*GP*;*RO*;*HD*
+;S,EX:-15,EY:-29;*GP*;*RO*;*HD*
+;ACW,DIA:210/0,EY:-16,DCX:15,RAD:15;*GP*;*RO*;*HD*
+;LR,EX:-6.1;*GP*;*RO*;*HD*
+;LD,EY:-40;*GP*;*RO*;*HD*
+;ACCW,EX:6.1,EY:-40,RAD:6.1;*GP*;*RO*;*HD*
+;LU,EY:-16;*GP*;*RO*;*HD*
+;LR,DIA:225/0;*GP*;*RO*;*HD*
+;ACW,EX:15,EY:-29,CX:0,RAD:15;*GP*;*RO*;*HD*
+;LD,EY:-60;*GP*;*RO*;*HD*
+;ACW,EX:-15,EY:-60,RAD:15;*GP*;*RO*;*HD*
+;LA,EX:-15,EY:-29;*GP*;*RO*;*HD*
+;#End contour definition end - Don't change!;*GP*;*RO*;*HD*
+E_LAB_E_RR15:
+
+E_LAB_A_R_15: ;#SM Z:2
+;#7__DlgK contour definition begin - Don't change!;*GP*;*RO*;*HD*
+G17 G90 DIAMOF;*GP*
+G0 X15 Y-60 ;*GP*
+G2 X-15 I=AC(0) J=AC(-60) ;*GP*
+;CON,0,0.0000,1,1,MST:0,0,AX:X,Y,I,J,TRANS:1;*GP*;*RO*;*HD*
+;S,EX:15,EY:-60;*GP*;*RO*;*HD*
+;ACW,EX:-15,EY:-60,RAD:15;*GP*;*RO*;*HD*
+;#End contour definition end - Don't change!;*GP*;*RO*;*HD*
+E_LAB_E_R_15:

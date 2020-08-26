@@ -1,0 +1,64 @@
+;ustanovka kanavkoy vverh
+;podkladki 20mm
+;nol po x levee 50 MM OT PAVOGO krae TISKOV
+N1 G54 ;nol na dne tiskov
+N2 STOPRE
+N3 R1=$P_UIFR[1,X,TR]+$P_UIFR[1,X,FI]
+N4 R2=$P_UIFR[1,Y,TR]+$P_UIFR[1,Y,FI]
+N5 R3=$P_UIFR[1,Z,TR]+$P_UIFR[1,Z,FI]
+N6 STOPRE
+N7 $P_UIFR[2]=CTRANS(X,R1-50,Y,R2, Z,R3+20+30)
+N8 G55
+N9 STOPRE
+N10 G55
+N11 WORKPIECE(,,,"BOX",0,0,-30,-80,0,0,90,-35)
+
+N51 T="FR8L30"
+N52 M6
+N53 D1
+N54 S4000 M3 G94 F1000
+N55 G0 X35 Y-30
+Z100
+Z1 M8
+G1 Z-31
+Z1
+x34 y-29
+z1
+g1 z-31 f400
+y-30
+y-29
+x36
+y-30
+N57 G0 z200
+N58 M9 M1
+
+T="FR6R1"
+m6
+d1
+m3 s5000 g94 f800
+g0 x65 y-30
+z1 m8
+g1 z=-22.5
+y5
+z-23
+y-30
+z-23.5
+y5
+z-23.7
+y-30
+r1=0
+r2=1.05
+r3=0.15
+while r1<r2
+ r1=r1+r3
+ if r1>r2
+    r1=r2
+ endif
+ g1 x=65+r1
+ y5
+ x=65-r1
+ y-30
+endwhile
+g0 z200
+N113 SUPA Y0 M9
+N114 M30

@@ -1,0 +1,60 @@
+;baza 'A' lejit na tiskah
+;  T="FR 80 GESAK"
+;  T="KUKURUZA 50 L125"
+;  T="KUKURUZA 50 L235"
+N1 G54
+N2 WORKPIECE(,"",,"BOX",64,26,-170,-80,0,0,885,-250)
+
+N3 T="FR 80 GESAK"
+N4 m6
+N5 d1
+N6 m3 s600 g94 f300
+N7 g0 Z200 m8
+;  Planirovanie torca 'A' z=0.4
+N8 CYCLE61(100,26,1,0,0,0,935,-260,4,90,0.4,300,11,0,1,11010)
+N9 g0 z200 m5
+N10 m9
+N11 m0
+
+
+N12 T="KUKURUZA 50 L125"
+N13 M6
+N14 D1
+N15 M3 S960 G94 F600
+;  Viborka okna na ploskosto 'A'
+N16 R1=-110 R2=-120 R3=30 ; R2=-134.5
+N17 WHILE R1>R2
+N18  R1=R1-R3
+N19  IF R1<R2
+N20    R1=R2
+N21  ENDIF
+N22  g0 x948 y-155
+;cyctre (rtp, Zwork, sdis, trstep,with, string[50] traect)
+N23 CYCTRE(50,R1,-R1+1,2,124,"G1 X822")
+N24 ENDWHILE
+N25 G0 Z200 M5
+N26 M9
+N27 M0
+
+
+N28 T="KUKURUZA 50 L235"
+N29 M6
+N30 D1
+N31 M3 S960 G94 F600
+;  Viborka okna na ploskosto 'A'
+N32 R1=-110 R2=-134.5 R3=30
+N33 WHILE R1>R2
+N34  R1=R1-R3
+N35  IF R1<R2
+N36    R1=R2
+N37  ENDIF
+N38  g0 x948 y-155
+;cyctre (rtp, Zwork, sdis, trstep,with, string[50] traect)
+N39 CYCTRE(50,R1,-R1+1,2,124,"G1 X822")
+N40 ENDWHILE
+N41 G0 Z200 M5
+N42 M9
+
+N43 M30
+
+

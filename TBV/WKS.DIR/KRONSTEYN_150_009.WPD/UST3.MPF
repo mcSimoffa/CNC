@@ -1,0 +1,107 @@
+G54
+;PLITKI 30 MM
+;PO X 180
+;16MM SLEVA
+N2 STOPRE
+N3 R1=$P_UIFR[1,X,TR]+$P_UIFR[1,X,FI]
+N4 R2=$P_UIFR[1,Y,TR]+$P_UIFR[1,Y,FI]
+N5 R3=$P_UIFR[1,Z,TR]+$P_UIFR[1,Z,FI]
+N6 STOPRE
+N7 $P_UIFR[2]=CTRANS(X,R1-150+16+120,Y,R2, Z,R3+30+65)
+N8 G55
+N9 STOPRE
+N10 G55
+N11 WORKPIECE(,,,"BOX",0,1,-67,-80,1,1,-122,-77)
+T="FR32Z3"
+N13 M6
+N14 d1
+N15 m3 s1500 g94 f500
+G0 Z100
+M8
+CYCLE61(100,0.25,1,-30,-121,-75,-10.3,1,5,6,0.25,500,21,10,1,11000)
+offn=0.1
+r1=0 r2=-29.8 r3=7.5
+about:
+while r1>r2
+ r1=r1-r3
+ if r1<r2
+  r1=r2
+ endif
+g0 x=10+$p_toolr y=10+$p_toolr
+z=r1 M8
+abfa:
+g1 x0 g41
+y-75 rnd=.5
+x-10 rnd=.5
+y0 rnd=.5
+x5
+y=10+$p_toolr g40
+g0 z50
+aboute:
+endwhile
+G0 SUPA Z-20
+M9 M1
+
+T="FR16L57"
+m6
+d1
+m3 s2500 g94 f500
+g0 x15 y15
+z-30 M8
+offn=0
+repeat abfa aboute
+g0 x-130.5 y-37.5
+;cyctre (rtp, Zwork, sdis, trstep,with, string[50] traect)
+N42 CYCTRE(150,-40,11,.3,20,"G1 x-21")
+g0 x-131 y-37.5
+z1
+offn=-.1 ;paz 20H9 mera
+g1 z-40
+y-47.5 g41
+x-21
+g3 y-27.5 ar=180
+g1 x-131
+y-37.5 g40
+G0 SUPA Z-20
+M9 M1
+
+T="FR50"
+N13 M6
+N14 d1
+N15 m3 s1500 g94 f500
+G0 Z100
+M8
+N17 CYCLE61(100,-29.75,1,-30,-121,-76,-10.5,1,2,25,0.25,500,22,10,1,11000)
+g0 x-10 y-110
+z0
+g1 y30
+G0 SUPA Z-20
+M9 M1
+
+T="E45X-D06"
+m6
+d1
+m3 s3000 g94 f300
+g0 x-130 y-80
+g0 z200 m8
+chamf(-30,.25,1)
+g1 x-120 g41
+y-47.5
+x-21
+y-27.5
+g1 x-120
+y5
+x-130 g40
+g0 z50
+
+g0 x10 y10
+chamf(0,.25,1)
+g1 x0 g41
+y-75
+x-10
+y0
+x10
+y10 g40
+G0 SUPA Z-20
+M9 supa y0
+M30

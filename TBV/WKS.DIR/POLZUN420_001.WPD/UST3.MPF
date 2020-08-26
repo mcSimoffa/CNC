@@ -1,0 +1,273 @@
+;T="FR 160"
+;T="KUKURUZA 50 L120"
+;T="KUKURUZA 50 L185"
+;T="FR 50 L160"
+;T="FR 40"
+;T="FR 8"
+;T="SV 6.8"
+;T="FSK8"
+;T="MET M8"
+
+N1 G54
+N2 WORKPIECE(,,,"BOX",0,5,-505,-80,0,0,650,-160)
+
+N13 T="FR 50 Z4" ;vilet > 100
+N14 M6
+N15 D1
+N16 M3 S830 G94 F600
+N17 G0 Z50 M8
+;stenki karmana 'B' 
+N18 R1=-90 R2=-100 R3=5
+N19 stenkib:
+N20 WHILE R1>R2
+N21  R1=R1-R3
+N22  IF R1<R2
+N23    R1=R2
+N24  ENDIF
+N25 G0 X=380 Y=-200 S830 F600
+;cyctre (rtp, Zwork, sdis, trstep,with, string[50] traect)
+N26 CYCTRE(50,R1,1-R1,1.5,80,"profil_BC5")
+N27 g0 x320 y-200
+N28 g0 z=r1+1 S960
+G1 Z=R1
+N29 y-130 F300
+N30 G0 Z50
+N31 G0 x380 y-100 F800
+N32 cycang(50,1,r1,25.5,2,"g1 x394.5 Y-85.5");rtp,Zhigh,Zlow,rad,step,mov
+N33 G0 x290 y-100
+N34 cycang(50,1,r1,25.5,2,"g1 x275.5 Y-85.5")
+N35 ENDWHILE
+N36 stenkibe:
+N37 m5
+N38 M9
+N39 M0
+
+
+N40 T="FR 50 Z4" ;vilet >150
+N41 M6
+N42 D1
+N43 M3 S830 G94 F600
+N44 G0 Z50 M8
+;stenki karmana 'B' 
+N45 R1=-100 R2=-149.5 R3=5
+N46 repeat stenkib stenkibe
+ ;mera po dnu karmana 'C'
+N47 g0 x335 y-200 S1150
+N48 z-140 F960
+N49 g1 z-150
+N50 Y=-120
+N51 z=ic(5)
+N52 G0 X=380 Y=-200
+N53 z-140
+N54 g1 z-150
+N55 profil_BC5
+N56 z=ic(5)
+N57 g0 y-200
+N58 G0 X=420 g41 offn=0
+N59 G1 z-150
+N60 Y=-60 rnd=25.5
+N61 G1 X=358.979
+N62 G3 X=311.021 I=AC(335) J=AC(-115)
+N63 G1 X=250 rnd=25.5
+N64 g1 Y-200
+N65 x280 g40
+N66 g0 z50 M5
+N67 M9
+N68 m0
+
+
+N69 T="FR 50 L160"
+N70 M6
+N71 D1
+N72 M3 S1600 G94 F600 M8
+;stenki karmana 'B' ZACHISTKA
+N73 OFFN=-.15
+N74 R1=0 R2=-149.5 R3=5
+N75 WHILE R1>R2
+N76  R1=R1-R3
+N77  IF R1<R2
+N78    R1=R2
+N79  ENDIF
+N80 G0 X=380 Y=-200
+N81 Z=R1
+N82 G1 X=420 G41
+N83 Y=-60 rnd=25.5
+N84 G1 X=358.979
+N85 G3 X=311.021 I=AC(335) J=AC(-115)
+N86 G1 X=250 rnd=25.5
+N87 G1 Y=-200
+N88 X380 G40
+N89 ENDWHILE
+N90 G0 Z100 M5
+N91 M9
+N92 M0
+
+
+N93 T="FR 40"
+N94 M6
+N95 D1
+N96 M3 S1300 G94 F500
+;karman 'F'
+N97 g0 x572 y-122
+N98 Z50 M8
+N99 CYCTRE(50,-4,5,2,50,"g1 y-105")
+N100 g0 x572 y-122
+N101 CYCTRE(50,-8,9,2,50,"g1 y-105")
+N102 offn=0.25
+N103 r1=-4
+N104 karmanf:
+N105 g0 x572 y-122
+N106 z1
+N107 g1 z=r1
+N108 x597 g41
+N109 y-80 rnd=5
+N110 x461 rnd=5
+N111 G1 Y-175
+N112 x490 g40
+N113 g0 z50
+N114 karmanfe:
+N115 r1=-8
+N116 repeat karmanf karmanfe
+;karman 'D'
+N117 g0 x175 y-122
+N118 CYCTRE(50,-4,5,2,50,"g1 y-105")
+N119 g0 x175 y-122
+N120 CYCTRE(50,-8,9,2,50,"g1 y-105")
+N121 r1=-4
+N122 karmand:
+N123 g0 x175 y-122
+N124 z1
+N125 g1 z=r1
+N126 X=200 g41
+N127 Y=-80 rnd=5
+N128 if $P_TOOLR>10
+N129 x25.67 rnd=20
+N130 else
+ N131 X=45.4 rnd=5
+ N132 x36.5 y-95.44 rnd=5
+N133 endif
+N134 G1 Y-185 ang=-55
+N135 x120 g40
+N136 g0 z50
+N137 karmande:
+N138 r1=-8
+N139 repeat karmand karmande
+N140 G0 Z100 M5
+N141 M9
+N142 M0
+
+
+N143 T="FR 8" ;VILET min
+N144 M6
+N145 D1
+N146 M3 S3600 G94 F1000
+;dorab uglov karman 'F'
+N147 G0 x577 y-100
+n148 cycang(50,1,-8,5,0.3,"g1 x592 Y-85");rtp,Zhigh,Zlow,rad,step,mov
+N149 G0 x481 y-100
+n150 cycang(50,1,-8,5,0.3,"g1 x466 Y-85")
+;dorab uglov karman 'D'
+N151 G0 x180 y-100
+n152 cycang(50,1,-8,5,0.3,"g1 x195 Y-85")
+N153 G0 X=64 Y=-85
+;cyctre (rtp, Zwork, sdis, trstep,with, string[50] traect)
+N154 CYCTRE(50,-8,10,.3,10,"DORABD")
+;senki karmana 'F' mera
+N155 offn=-.1
+N156 r1=-8
+N157 repeat karmanf karmanfe
+N158 g0 z50
+N159 repeat karmand karmande ;mera karman 'D' stenki
+N160 G0 Z100 M5
+N161 M9
+N162 m0
+
+
+N163 T="SV 6.8"
+N164 m6
+N165 d1
+N166 m3 s2600 g95 f0.26
+N167 g0 z200 m10
+N168 MCALL CYCLE83(100,0,1,-25,,,25,100,1,3,100,0,0,0.5,0.5,2,10,10,1,11212112)
+N169 otv: g0 x220 y-20
+N170 x25 y-70
+N171 otve: mcall
+N172 g0 z200 M5
+N173 m9
+N174 M0
+
+
+N175 T="FSK8"
+N176 M6
+N177 D1
+N178 M3 S3600 G94 F500
+N179 G0 Z200 M8
+N180 g0 X-10 y10
+N181 CHAMF(0,.5,1)
+N182 G1 Y=0 g41
+N183 X=650
+N184 Y=-140
+N185 X=612
+N186 Y=-95
+N187 G1 X=597
+N188 Y=-80 rnd=5
+N189 G1 X=461 rnd=5
+N190 G1 Y=-148
+N191 X=420
+N192 Y=-60 rnd=25.5
+N193 G1 X=358.979
+N194 G3 X=311.021 I=AC(335) J=AC(-115)
+N195 G1 X=250 rnd=25.5
+N196 G1 Y=-160
+N197 X=239.059
+N198 X=237 Y=-158.413
+N199 X=220 Y=-95
+N200 X=200
+N201 Y=-80 rnd=5
+N202 G1 X=48.288
+N203 X=45.401 rnd=5
+N204 X=36.48 y-95.44 rnd=5
+N205 X=81.688 Y=-160
+N206 X=45
+N207 X=1.464 Y=-116.464
+N208 G2 X=0 Y=-112.929 I=AC(5) J=AC(-112.929)
+N209 G1 Y10
+N210 x-10 g40
+N211 g0 z100
+
+N212 G0 X=587 Y=-105
+N213 CHAMF(-8,.5,1);faska v karmane 'F'
+N214 G1 Y=-95 g41
+N215 G1 X=475
+N216 Y=-155
+N217 x485 g40
+N218 g0 z100
+
+N219 G0 X=190 y-105
+N220 CHAMF(-8,.5,1);faska v karmane 'D'
+N221 g1 Y=-95 g41
+N222 x54.5
+N223 y-170 ang=-55
+N224 x110 g40
+N225 g0 z100
+
+N226 MCALL cfhole(100,1,0,1.5,6.8);RTP,SDIS,Z0,KATET,DOTV
+N227 repeat otv otve
+N228 G0 Z50 M5
+N229 M9
+N230 M0
+
+
+N231 T="MET M8"
+N232 m6
+N233 d1
+N234 M3 S180
+N235 g0 z200 m8
+N236 MCALL CYCLE84(100,0,10,-20,,1,5,,1.25,0,180,180,0,1,0,0,5,1.4,,"ISO_METRIC","M8",,1001,2001002)
+N237 repeat otv otve
+N238 g0 z200 M5
+N239 M9
+N240 T0 M6
+N241 M30
+
+

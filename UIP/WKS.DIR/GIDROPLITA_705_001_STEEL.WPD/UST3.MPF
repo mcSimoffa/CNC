@@ -1,3 +1,6 @@
+
+NEPRAVILLYNO BAZA , NADO S ODNOY STORONI
+
 ;POVERNUT' PO OSI x PO CHASOVOI NA 90
 N10 G54 ;nol X sprava 
 STOPRE
@@ -14,12 +17,12 @@ WORKPIECE(,,,"BOX",0,0,-70,-80,0,0,-118,-90)
 T="SV 5.5"
 m6
 d1
-m3 s500 g95 f.08
+m3 s400 g95 f.08
 G0 Z200
 G0 Z125 M8
 MCALL CYCLE83(100,0,1,-32,,,10,100,0.2,0.5,75,1,0,3,1,0.2,1,10,1,11211112)
-otv5: g0 x-5 y-75
-x-113 y-75
+otv5: G0 x-5 y-75
+ x-113 y-75
 x-113 y-38
 x-5 y-38
 otve5: mcall

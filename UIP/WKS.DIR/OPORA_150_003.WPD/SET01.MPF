@@ -1,0 +1,153 @@
+;X132Y122Z102
+N1 G54
+N2 STOPRE
+N3 R1=$P_UIFR[1,X,TR]+$P_UIFR[1,X,FI]
+N4 R2=$P_UIFR[1,Y,TR]+$P_UIFR[1,Y,FI]
+N5 R3=$P_UIFR[1,Z,TR]+$P_UIFR[1,Z,FI]
+N6 STOPRE
+N7 $P_UIFR[2]=CTRANS(X,R1-1,Y,R2-1, Z,R3+101)
+N8 G55
+N9 STOPRE
+N10 G55
+N11 WORKPIECE(,,,"BOX",0,1,-102,-80,1,1,-132,-122)
+T="WSX445_080"
+N13 M6
+N14 d1
+N15 m3 s600 g94 f500
+g0 z100
+m8
+N17 CYCLE61(100,2,1,0,-132,1,1,-124,2,50,0.2,500,11,0,1,11000)
+G0 SUPA Z-20
+M9 M1
+
+T="FR50"
+N13 M6
+N14 d1
+N15 m3 s1500 g94 f500
+N16 g0 z100
+m8
+N17 CYCLE61(100,0.25,1,0,-132,1,1,-124,2,25,0.25,500,12,0,1,11000)
+G0 SUPA Z-20
+M9 M1
+
+T="FR32Z3"
+N13 M6
+N14 d1
+N15 m3 s1500 g94 f500
+G0 Z100
+m8
+N17 CYCLE61(100,0,1,-0.5,-25,1,-105,-124,2,28,0.5,500,22,11,1,11000)
+offn=0.1
+r1=0 r2=-50 r3=8
+about:
+while r1>r2
+ r1=r1-r3
+ if r1<r2
+  r1=r2
+ endif
+g0 x=10+$p_toolr y=10+$p_toolr
+z=r1 M8
+abfa:
+g1 x0 g41 M8
+y-120 RND=.5
+x-129.8 RND=.5
+y0 RND=.5
+x10
+y=10+$p_toolr g40
+aboute:
+endwhile
+G0 SUPA Z-20
+M9 M1
+
+T="FSK6"
+M6
+D1
+M3 S3000 G95 F.03
+G0 Z100
+M8
+MCALL CYCLE81(100,0,1,-1.5,,1,0,1,22)
+REPEAT OTV55 OTVE55
+MCALL CYCLE81(100,0,1,-2,,1,0,1,22)
+REPEAT OTV13 OTVE13
+G0 SUPA Z-20
+M9 M1
+
+T="SV 14"
+m6
+d1
+m3 s200 g95 f.15
+g0 z100
+m8
+MCALL CYCLE82(100,0,1,-20,,1,10,1,22)
+otv13:
+g0 x-14 y-15
+x-116
+y-95
+x-14
+otve13: mcall
+G0 SUPA Z-20
+M9 M1
+
+T="SV 5.5"
+m6
+d1
+m3 s500 g95 f.075
+g0 z200 m8
+MCALL CYCLE82(100,0,1,-20,,1,10,1,22)
+otv55:
+g0 x-14 y-60
+x-116
+otve55: mcall
+G0 SUPA Z-20
+M9 M1
+
+T="FR16L57"
+m6
+d1
+m3 s2500 g94 f500
+g0 x15 y15
+g0 z100 m8
+z-20
+offn=0.05
+repeat abfa aboute
+G0 SUPA Z-20
+M9 M1
+
+T="E45X-D06"
+m6
+d1
+m3 s3000 g94 f300
+g0 z200
+g0 x10 y10
+chamf(0,.25,1)
+g1 x0 g41 M8
+y-120
+x-27
+z=ic(-.5)
+x-103
+z=ic(.5)
+x-130
+y0
+x-103
+z=ic(-.5)
+x-27
+z=ic(.5)
+x10
+y=10 g40
+g0 z50
+mcall cfhole(50,1,0,.5,13.5);RTP,SDIS,ZNULL,KATET,DOTV
+repeat otv13 otve13
+G0 SUPA Z-20
+M9 M1
+
+T="FSK6"
+m6
+d1
+m3 s3000 g94 f300
+g0 z200
+m8
+mcall cfhole(50,1,0,.5,5.5);RTP,SDIS,ZNULL,KATET,DOTV
+repeat otv55 otve55
+G0 SUPA Z-20
+M9 SUPA Y0
+M30

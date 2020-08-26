@@ -1,0 +1,47 @@
+N10 G54 ;KRUK OT OPERATORA
+;plitki 40
+STOPRE
+R1=$P_UIFR[1,X,TR]+$P_UIFR[1,X,FI]
+R2=$P_UIFR[1,Y,TR]+$P_UIFR[1,Y,FI]
+R3=$P_UIFR[1,Z,TR]+$P_UIFR[1,Z,FI]
+STOPRE
+$P_UIFR[2]=CTRANS(X,R1-150+55,Y,R2, Z,R3+40+10)
+G55
+
+WORKPIECE(,,,"BOX",0,0,-10,-80,0,0,141,-35.6)
+T="SV 5.5"
+m6
+d1
+m3 s400 g95 f.08
+g0 z200
+m8
+MCALL CYCLE82(100,0,1,-11,,1,10,1,22)
+otv: g0 x5.5 y-11.5
+x16.5
+otve: mcall
+g0 z200
+m9 m1
+
+T="FR4"
+m6
+d1
+m3 s6000 g94 f800
+g0 z200
+m8
+;RASKATKA(RTP,SDIS,ZNULL,GLUBINA,DST, DFIN,TURNFACTOR)
+N120 mcall RASKATKA(50,1,0,5.4,5,9.1,12)
+repeat otv otve
+g0 Z200
+m9 m1
+
+T="E45X-D06"
+m6
+d1
+m3 s3000 g93 f400
+g0 z200
+m8
+mcall cfhole(50,1,0,.3,9);RTP,SDIS,ZNULL,KATET,DOTV
+repeat otv otve
+g0 SUPA z-20
+supa y0 M9
+m30

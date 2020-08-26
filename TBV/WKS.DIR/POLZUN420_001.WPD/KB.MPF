@@ -1,0 +1,50 @@
+;2007132015476672
+;[CYCLE63]
+;internal version: 04.07.70
+;filename pocket contour:       /_N_WKS_DIR/_N_POLZUN420_001_WPD/_N_UST5_MPF
+;filename drilling program:   
+;checksum_parameters: 0000000000000000006132308404179417
+;checksum_contours  : 0100087342219969366808640101363328
+;startpoint first axis : 275.000000
+;startpoint second axis: -14.800000
+;maximal drillradius   : 39.800000
+;warnings : 
+;
+;
+DEF INT _I,_IMAX=1
+DEF REAL _DT=1.4,_T=-8,_T1=-8
+G17 G90 DIAMCYCOF
+; ------------------------------------
+
+SBLON
+G0 X275 Y-14.8
+G0 Z=_T+_DT
+SBLOF
+; ------------------------------------
+G94 F600
+G1 X114.573 Z=_T+0.7 
+X275 Z=_T 
+; ------------------------------------
+G94 F600
+X104.214 
+G3 X102.166 Y-15.866 I=AC(104.214) J=AC(-17.3)
+G1 X98.385 Y-21.266 
+G3 X100.433 Y-25.2 I=AC(100.433) J=AC(-22.7)
+G1 X425.7 
+G3 X428.2 Y-22.7 I=AC(425.7) J=AC(-22.7)
+G1 Y-17.3 
+G3 X425.7 Y-14.8 I=AC(425.7) J=AC(-17.3)
+G1 X275 
+G2 X272.647 Y-11.455 I=AC(275) J=AC(-12.3)
+G1 X277.353 Y1.655 
+G3 X275 Y5 I=AC(275) J=AC(2.5)
+G1 X92.605 
+X57.594 Y-45 
+X448 
+Y5 
+X275 
+SBLON
+G0 Z-6.6
+SBLOF
+; ------------------------------------
+M17

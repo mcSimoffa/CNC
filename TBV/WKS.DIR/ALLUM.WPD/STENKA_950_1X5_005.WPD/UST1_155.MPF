@@ -1,0 +1,192 @@
+N1 G54 ;nol X SLEVA 
+N2 STOPRE
+N3 R1=$P_UIFR[1,X,TR]+$P_UIFR[1,X,FI]
+N4 R2=$P_UIFR[1,Y,TR]+$P_UIFR[1,Y,FI]
+N5 R3=$P_UIFR[1,Z,TR]+$P_UIFR[1,Z,FI]
+N6 STOPRE
+N7 $P_UIFR[2]=CTRANS(X,R1+1-27.5-90,Y,R2-1, Z,R3+45+14)
+N8 G55
+N9 STOPRE
+WORKPIECE(,,,"BOX",0,1,-15,-80,-1,1,90,-71)
+T="WSX445_080"
+m6
+d1
+m3 s1000 f1000 g94
+g0 z200 m8
+CYCLE61(100,1,2,0,-5,10,90,-75,4,40,0,500,11,0,1,11000)
+g0 z200 m9
+m1
+
+T="SV 22.5"
+m6
+d1
+m3 s2000 g95 f.1
+g0 x59 y-40 m8
+z1
+g1 z-10
+z1 f1
+g0 z200 m9
+m1
+
+T="FR6AL"
+M6
+d1
+m3 s5000 g94 f600
+;periferiya mera
+g0 x-10 y10
+z1
+g1 z-8 m8
+y0 g41 offn=-.05
+x88 rnd=.25
+y-69 rnd=.25
+x0 rnd=.25
+y0 rnd=.25
+x2
+y10 g40
+g0 z100
+m1
+
+;otverstie mera
+g0 x59 y-40
+;RASKATKA(RTP,SDIS, ZNULL, GLUBINA, DST, DFIN,TURNFACTOR)
+N391 RASKATKA(50,1,0,8,22.5,25.1,2)
+F1000
+;cyctre (rtp, Zwork, sdis, trstep,with, string[50] traect)
+N393 mcall CYCTRE(50,-5,6,0.4,8,"G1 x3.5")
+g0 x-5 y-21
+x-5 y-53
+mcall
+N393 mcall CYCTRE(50,-5,6,0.4,8,"G1 x84.5")
+g0 x93 y-21
+x93 y-53
+mcall
+
+N393 mcall CYCTRE(50,-5,6,0.4,10,"G1 y-5.5")
+g0 x24 y6
+x64 y6
+mcall
+
+N393 mcall CYCTRE(50,-5,6,0.4,10,"G1 y-63.5")
+g0 x24 y-75
+x64 y-75
+mcall
+g0 z200 m9
+m1
+
+T="SV 4.3"
+m6
+d1
+m3 s1000 g95 f.12
+g0 z200 m8
+MCALL CYCLE82(100,-5,1,-9,,1,10,1,22)
+otv4_3:g0 x3.5 y-21
+y-53
+x84.5
+y-21
+otve4_3: mcall
+g0 z200 m9
+m1
+
+T="SV 5.5"
+m6
+d1
+m3 s800 f0.15 g95
+g0 z200 m8
+MCALL CYCLE82(100,-5,1,-9,,1,10,1,22)
+otv5_5: g0 x24 y-5.5
+x64
+y-63.5
+x24
+otve5_5: mcall
+g0 z200 m9
+m1
+
+T="FR4AL"
+M6
+d1
+m3 s6000 g94 f1300
+trans x59 y-40 
+g0 x0 y0 
+z10 m8
+g1 g41 x=38/2 z1
+g3 i=ac(0) j=ac(0) z-6 turn=18
+g3 i=ac(0) j=ac(0)
+g1 z10
+g0 z50
+x0 y0 g40 m9
+trans
+m0
+
+T="FSK6"
+m6
+d1
+m3 s5000 g94 f600
+g0 z100 m8
+x-10 y10
+chamf(0,.5,1)
+G1 Y=0 g41
+G1 X=19
+Y=-5.5
+G3 X=29 I=AC(24) J=AC(-5.5)
+G1 Y=0
+X=59
+Y=-5.5
+G3 X=69 I=AC(64) J=AC(-5.5)
+G1 Y=0
+X=88
+Y=-17
+X=84.5
+G3 Y=-25 I=AC(84.5) J=AC(-21)
+G1 X=88
+Y=-49
+X=84.5
+G3 Y=-57 I=AC(84.5) J=AC(-53)
+G1 X=88
+Y=-69
+X=69
+Y=-63.5
+G3 X=59 Y=-63.5 I=AC(64) J=AC(-63.5)
+G1 Y=-69
+X=29
+Y=-63.5
+G3 X=19 I=AC(24) J=AC(-63.5)
+G1 Y=-69
+X=0
+Y=-57
+X=3.5
+G3 Y=-49 I=AC(3.5) J=AC(-53)
+G1 X=0
+Y=-25
+X=3.5
+G3 Y=-17 I=AC(3.5) J=AC(-21)
+G1 X=0
+Y=10
+x-10 g40
+g0 z100
+m0
+
+MCALL cfhole(100,1,-5,.3,4.3);RTP,SDIS,Z0,KATET,DOTV
+repeat otv4_3 otve4_3
+g0 z200 m9
+m0
+
+T="FSK8"
+m6
+d1
+m3 s4000 g94 f600
+g0 z100 m8
+x-10 y10
+MCALL cfhole(100,1,-5,.3,5.5)
+repeat otv5_5 otve5_5
+g0  x59 y-40
+cfhole(100,1,0,1,25)
+trans x59 y-40
+g0 x17 y0
+z1
+g1 z-2.4
+g3 i=ac(0) j=ac(0)
+g1 z1
+trans
+g0 z200 m9
+SUPA Y0
+m30
