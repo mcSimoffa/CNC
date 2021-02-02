@@ -1,0 +1,82 @@
+;zagotovku pereustanovit X=120 Y=65 Z=75
+;PODOSHVA SPRAVA
+G54
+N2 STOPRE
+N3 R1=$P_UIFR[1,X,TR]+$P_UIFR[1,X,FI]
+N4 R2=$P_UIFR[1,Y,TR]+$P_UIFR[1,Y,FI]
+N5 R3=$P_UIFR[1,Z,TR]+$P_UIFR[1,Z,FI]
+N6 STOPRE
+N7 $P_UIFR[2]=CTRANS(X,R1,Y,R2, Z,R3+75)
+N8 G55
+N9 STOPRE
+N10 G55
+N11 WORKPIECE(,,,"BOX",0,0,-75,-80,0,0,-120,-65)
+
+T="FR32Z3"
+N13 M6
+N14 d1
+N15 m3 s1200 g94 f500
+g0 Z100
+offn=0.1
+r1=0 r2=-19.9 r3=10
+while r1>r2
+ r1=r1-r3
+ if r1<r2
+  r1=r2
+ endif
+g0 x-30 y-55 M8
+;cyctre (rtp, Zwork, sdis, trstep,with, string[50] traect)
+N42 CYCTRE(50,r1,1-r1,1.5,40,"USTUP5")
+endwhile
+G0 X-30 Y-55
+Z-20
+USTUP5
+G0 SUPA Z-20
+M9 M1
+
+T="FR8L30"
+m6
+d1
+m3 s4500 g94 f500
+g0 Z100
+M8
+N80 g0 x-80 y-29
+N81 cycang(100,0,-20,5,.4,"g1 X-95 Y-14")
+N80 g0 x-30 y-29
+N81 cycang(100,0,-20,5,.4,"g1 X-15 Y-14")
+g0 x-20 y-70
+z-20
+g1 x-10 g41 offn=-.1
+y-9 rnd=5
+x-100 rnd=5
+y-40
+x-85 g40
+G0 SUPA Z-20
+M9 M1
+
+T="E45X-D06"
+m6
+d1
+m3 s3000 g94 f300
+g0 z200 m8
+g0 x10 y-75
+chamf(0,.25,1)
+g1 y-65 g41
+x-10
+y-9 rnd=4
+x-100 rnd=5
+y-35
+x-120
+y0
+x1
+g0 y10 g40
+g0 z50
+
+g0 x-20 y-45
+chamf(-20,.25,1)
+g1 y-35  g41
+x-90
+y-45 g40
+G0 SUPA Z-20
+M9 supa y0
+M30

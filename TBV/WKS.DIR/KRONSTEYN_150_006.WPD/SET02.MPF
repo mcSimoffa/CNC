@@ -1,0 +1,108 @@
+N1 G54 ;NA 180 PO Y
+N2 STOPRE
+N3 R1=$P_UIFR[1,X,TR]+$P_UIFR[1,X,FI]
+N4 R2=$P_UIFR[1,Y,TR]+$P_UIFR[1,Y,FI]
+N5 R3=$P_UIFR[1,Z,TR]+$P_UIFR[1,Z,FI]
+N6 STOPRE
+N7 $P_UIFR[2]=CTRANS(X,R1,Y,R2, Z,R3+30+75-.1)
+N8 G55
+N9 STOPRE
+N10 G55
+N11 WORKPIECE(,,,"BOX",0,1,-77,-80,1,1,-168,-150)
+T="WSX445_080"
+N13 M6
+N14 d1
+N15 m3 s600 g94 f500
+N16 g0 z200 m8
+N17 CYCLE61(100,2,1,0,-170,1,1,-150,2,50,0.2,500,11,0,1,11000)
+G0 SUPA Z-20
+M9 M1
+
+T="FR50"
+N13 M6
+N14 d1
+N15 m3 s1500 g94 f500
+N16 g0 z200 m8
+N17 CYCLE61(100,0.25,1,0,-170,1,1,-150,2,30,0.25,500,12,0,1,11000)
+G0 SUPA Z-20
+M9 M1
+
+T="FR32Z3"
+N13 M6
+N14 d1
+N15 m3 s1500 g94 f500
+N16 g0 z200
+r1=0 r2=-40 r3=8
+about:
+while r1>r2
+ r1=r1-r3
+ if r1<r2
+  r1=r2
+ endif
+g0 x=10+$p_toolr y=10+$p_toolr
+z=r1
+abfa:
+g1 x0 g41 M8
+y-148 RND=.5
+x-166 RND=.5
+y0 RND=.5
+x10
+y=10+$p_toolr g40
+ABOUTE:
+endwhile
+G0 SUPA Z-20
+M9 M1
+
+T="FR16L57"
+m6
+d1
+m3 s2500 g94 f500
+g0 z200 m8
+g0 x15 y15
+z-38
+offn=0
+repeat abfa aboute
+G0 SUPA Z-20
+M9 M1
+
+T="SV 9"
+m6
+d1
+m3 s250 g95 f.11
+g0 z200
+M8
+MCALL CYCLE82(100,0,1,-12,,1,10,1,22)
+mask:
+HOLES2(-83,-68,54,0,90,4,2000,0,,,1)
+maske: mcall
+G0 SUPA Z-20
+M9 M1
+
+T="FR8L30"
+m6
+d1
+m3 s5000 g94 f1000
+g0 z100
+m8
+;mcall RASKATKA(RTP,SDIS, ZNULL, GLUBINA, DST, DFIN,TURNFACTOR)
+N391 mcall RASKATKA(50,1,0,5,9,15.2,12)
+repeat mask maske
+G0 SUPA Z-20
+M9 M1
+
+T="E45X-D06"
+m6
+d1
+m3 s3000 g94 f300
+g0 z200 m8
+g0 x10 y10
+chamf(0,.25,1)
+repeat abfa aboute
+G0 Z100
+g0 x-83 y-68
+cfhole(50,1,0,.5,90);RTP,SDIS,ZNULL,KATET,DOTV
+mcall cfhole(50,1,0,.5,15)
+repeat mask maske
+G0 SUPA Z-20
+SUPA Y0 M9
+M30

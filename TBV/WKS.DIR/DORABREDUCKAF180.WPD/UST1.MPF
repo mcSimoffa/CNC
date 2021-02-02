@@ -1,0 +1,68 @@
+;PODKLADKI 20MM
+;NOL XY V OSI OTVERST
+g55
+WORKPIECE(,,,"BOX",0,0,-67.5,-80,-90,90,180,-180)
+T="FR32Z3"
+m6
+d1
+m3 s2800 g94 f600
+r1=-12
+offn=0.5
+ncont:
+g0 z100
+X=-100 Y=71+20 M8
+g1 z=r1
+fskst:
+y71 g41
+G1 X=60.067
+G2 X=71 Y=60.067 I=AC(0) J=AC(0)
+G1 Y=-60.067
+G2 X=60.067 Y=-71 I=AC(0) J=AC(0)
+G1 X=-60.067
+G2 X=-71 Y=-60.067 I=AC(0) J=AC(0)
+G1 Y=60.067
+G2 X=-60.067 Y=71 I=AC(0) J=AC(0)
+g1 x=ic(3)
+g348 disr=3 y95 g40
+nconte:
+r1=-23
+repeat ncont nconte
+g0 z250 m9
+m1
+
+T="FR8AL"
+m6
+d1
+m3 s4000 g94 f700
+g0 z200 m8 offn=-.1
+r1=-12
+repeat  ncont nconte
+r1=-22.5
+repeat  ncont nconte
+g0 z200 m9
+m1
+
+N34 T="SV8_5"
+N35 M6
+N36 D1
+N37 M3 S500 G95 F.1
+N38 G0 Z200 M8
+N39 MCALL CYCLE82(100,0,1,-25,,0.1,10,1,12,10000,6,50,,50)
+N40 CIRCPAT: HOLES2(0,0,82.5,45,30,4,1000,0,,,1)
+N41 ENDPATT: MCALL
+N42 G0 Z200 M9 G94
+N43 M1
+
+T="FSK6"
+m6
+d1
+m3 s5000 g94 f700
+g0 X-80 Y77 m8
+freecf(0,.7)
+repeat  fskst nconte
+g0 z200
+N56 MCALL CFHOLE(100,1,0,1,8.6)
+N57 REPEAT CIRCPAT ENDPATT
+G0 Z200
+G0 SUPA Z0 Y0 X-300 M9
+m30

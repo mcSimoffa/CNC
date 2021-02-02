@@ -1,0 +1,61 @@
+;2006151526322182
+;[CYCLE63]
+;internal version: 04.04.25
+;filename pocket contour:       /_N_WKS_DIR/_N_STIRATEL_WPD/_N_OSNASTKA1_MPF
+;filename drilling program:   
+;checksum_parameters: 00003462101535424496
+;checksum_contours  : 00007758288500629440
+;startpoint first axis : 41.000000
+;startpoint second axis: -39.000152
+;maximal drillradius   : 30.899848
+;warnings : 
+;
+;
+DEF INT _I,_IMAX=3
+DEF REAL _DT=1.867,_T=-11.667,_T1=-11.667
+G17 G90 DIAMCYCOF
+; ------------------------------------
+FOR _I=1 TO _IMAX
+; ------------------------------------
+SBLON
+G0 X41 Y-39
+G0 Z=_T+_DT
+SBLOF
+G94 F500
+G1 X55
+G3 X=IC(0) Y=IC(0) Z=_T I=AC(41) J=AC(-39) TURN=7
+G1 X41
+; ------------------------------------
+G94 F500
+G1 Y-39.604 
+X59 
+G3 X59.604 Y-39 I=AC(59) J=AC(-39)
+G1 Y-38.698 
+G3 X59.302 Y-38.396 I=AC(59.302) J=AC(-38.698)
+G1 X57 
+X41 
+G3 X40.396 Y-39 I=AC(41) J=AC(-39)
+G1 Y-39.302 
+G3 X40.698 Y-39.604 I=AC(40.698) J=AC(-39.302)
+G1 X41 
+G2 X42.843 Y-42.381 I=AC(41) J=AC(-41.604)
+G1 X39.157 Y-51.123 
+G3 X41 Y-53.9 I=AC(41) J=AC(-51.9)
+G1 X73.9 
+Y-24.1 
+X57 
+X26.1 
+Y-53.9 
+X41 
+SBLON
+G0 Z-9.8
+SBLOF
+; ------------------------------------
+IF(_I<_IMAX-1)
+_T=_T-_DT+0.2
+ELSE
+_T=-15
+ENDIF
+ENDFOR
+; ------------------------------------
+M17

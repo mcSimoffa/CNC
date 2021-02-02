@@ -1,0 +1,34 @@
+N1 G54 ;nol X SLEVA 
+N2 STOPRE
+N3 R1=$P_UIFR[1,X,TR]+$P_UIFR[1,X,FI]
+N4 R2=$P_UIFR[1,Y,TR]+$P_UIFR[1,Y,FI]
+N5 R3=$P_UIFR[1,Z,TR]+$P_UIFR[1,Z,FI]
+N6 STOPRE
+N7 $P_UIFR[2]=CTRANS(X,R1-88,Y,R2, Z,R3+40+8)
+N8 G55
+N9 STOPRE
+WORKPIECE(,,,"BOX",0,1,-15,-80,-1,1,90,-71)
+
+T="FR6AL" ;for Al
+m6
+d1
+m3 s5000 g94 f600
+M8
+;cyctre (rtp, Zwork, sdis, trstep,with, string[50] traect)
+N393 mcall CYCTRE(50,-5,6,0.4,8,"G1 x5.5")
+g0 x-5 y-21
+x-5 y-53
+mcall
+
+T="FR4AL"
+m6
+d1
+m3 s5000 g95 f.02
+g0 z200 m8
+N393 mcall CYCTRE(50,-9,10,0.2,4.5,"G1 x5.5")
+otv4_3:g0 x3.5 y-21
+X3.5 y-53
+otve4_3: mcall
+g0 z200 m9
+SUPA Y0
+m30

@@ -1,0 +1,34 @@
+;zakrepit na kubike. Vilet vpravo 
+N1 G55 ;z0 na verhneu ploskosti
+;skos 20 grad i R20 vlevo
+;R62 vpravo
+;X0 sprava 
+;Y0 vnizu
+;kreplenie prihvatom sleva
+WORKPIECE(,,,"BOX",48,0,-10,-80,-93,0,0,104)
+
+T="FR32Z3"
+m6
+d1
+m3 s1000 g94 f500
+r10=-33.75 ;Xcentr
+r11=-62 ;Z centr
+r20=0.8 ;radius plastiny
+r2=33 r3=.5
+r1=-r3
+while r1<r2
+ r1=r1+r3
+ r12=r10+(62+r20)*sin(r1)+$P_TOOLR-r20
+ r13=r11+(62+.8)*cos(r1)-r20
+ G0 X=r12 y=110+$P_TOOLR
+ z1
+ g1 z=r13
+ y=-10-$P_TOOLR
+g0 z10
+endwhile
+g0 z100 m9
+supa z0 y0
+m30
+
+
+

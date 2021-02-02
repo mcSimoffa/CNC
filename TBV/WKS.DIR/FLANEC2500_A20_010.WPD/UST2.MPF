@@ -1,0 +1,141 @@
+;S PRAVO 50MM HTANGELEM
+;PO Y 180 GR
+;S NIZY 20MM
+N1 g54
+N2 STOPRE
+N3 R1=$P_UIFR[1,X,TR]+$P_UIFR[1,X,FI]
+N4 R2=$P_UIFR[1,Y,TR]+$P_UIFR[1,Y,FI]
+N5 R3=$P_UIFR[1,Z,TR]+$P_UIFR[1,Z,FI]
+N6 STOPRE
+N7 $P_UIFR[2]=CTRANS(X,R1-50,Y,R2+12, Z,R3+20+45)
+N8 G55
+N9 STOPRE
+N10 G64 SOFT COMPON
+N11 WORKPIECE(,"",,"BOX",0,14,-59,-80,0,0,-50,-40)
+N12 T="WSX445_080"
+N13 M6
+N14 D1
+N15 S500 M3 G94
+N16 M8
+N17 CYCLE61(100,14,1,0,-55,1,1,-45,1,50,0.25,500,11,0,1,1000)
+N38 g0 z200 m9
+N39 m1
+
+N121 T="SV 9"
+N122 m6
+N123 d1
+N124 m3 s250 g95 f.1
+N125 g0 z200 m8
+N126 MCALL CYCLE82(100,0,1,-40,,1,10,1,22)
+N127 otv: g0 x-41.5 y-20
+N128 x-11.5
+N129 otve: mcall
+N130 g0 z200 m9
+N131 m1
+
+N48 T="FR32Z3"
+N49 M6
+N50 D1
+N51 S1500 M3 G94 f800
+N52 g0 z200 M8
+CYCLE61(100,0,1,-3,0,0,-35,-40,3,10,0.25,500,21,1,1,11000)
+r1=0 r2=-13 r3=2
+while r1>r2
+ r1=r1-r3
+ if r1<r2
+   r1=r2
+ endif
+stenk:
+g0 x20 y-40
+z0
+g1 z=r1
+y-28 g41
+x-35
+y-50
+x-10 g40
+g0 z20
+x-15 y20
+z0
+g1 z=r1
+x-35 g41
+y-12
+x10
+y4 g40
+g0 z50
+stenke:
+endwhile
+g0 z200 m9
+m1
+
+N40 T="FR50"
+N41 M6
+N42 D1
+N43 S1500 M3 G94
+N44 M8
+N45 CYCLE61(100,0.25,1,0,-55,1,-35,-45,1,20,0.25,500,12,0,1,1000)
+CYCLE61(100,-2.75,1,-3,0,0,-35,-30,3,20,0.25,500,22,1,1,11000)
+N46 g0 z200 m9
+N47 m1
+
+N93 T="FR 8"
+N94 M6
+N95 D1
+N96 S5000 M3 G94 f1000
+N78 g0 x-19 y4 M8
+N79 cycang(100,0,-13,5,.3,"g1 X-30 Y-7");rtp,Zhigh,Zlow,rad,step,move
+N78 g0 x-19 y-44
+N79 cycang(100,0,-13,5,.3,"g1 X-30 Y-33")
+offn=0
+r1=-13
+CFIN
+repeat stenk stenke
+g0 z200 m9
+m1
+
+N132 T="FR10L47"
+N133 M6
+N134 D1
+N135 S3000 M3 G94 f500
+G0 X-40 Y-20
+Z5 m8
+r1=0 r2=-40 r3=.5
+r4=-41.5 r5=-10.5
+while r1>r2
+ r1=r1-r3
+ if r1<r2
+   r1=r2
+ endif
+if r1<r2
+ r1=r2
+endif
+g0 x=r4 y-20
+g1 z=r1
+x=r5
+r6=r5
+r5=r4
+r4=r6
+endwhile
+G1 Z1
+N138 g0 z200 m9
+N139 m0
+
+N140 T="E45X-D06"
+N141 m6
+N142 d1
+N143 m3 s3000 g94 f300
+N144 g0 x10 y-40 m8
+N145 chamf(-3,1,1)
+N146 G1 y-28 G41
+N147 x-28
+N148 y-40 g40
+g0 z50
+N144 g0 x-28 y0
+N145 chamf(-3,1,1)
+N146 G1 y-12 G41
+N147 X.75
+N148 y-30
+X15 g40
+g0 z50
+N152 G0 Z200 m9
+N153 supa y0
+N154 m30

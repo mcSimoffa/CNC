@@ -1,0 +1,216 @@
+N1 G54
+;PLITKI 48
+;RAVNYAT SPRAVA
+N2 STOPRE
+N3 R1=$P_UIFR[1,X,TR]+$P_UIFR[1,X,FI]
+N4 R2=$P_UIFR[1,Y,TR]+$P_UIFR[1,Y,FI]
+N5 R3=$P_UIFR[1,Z,TR]+$P_UIFR[1,Z,FI]
+N6 STOPRE
+N7 $P_UIFR[2]=CTRANS(X,R1-152+1,Y,R2-1, Z,R3+48+14)
+N8 G55
+N9 STOPRE
+N10 WORKPIECE(,,,"BOX",0,1,-15,-80,-1,1,152,-76)
+N11 T="WSX445_080"
+N12 m6
+N13 d1
+N14 m3 s1000 f1000 g94
+N15 g0 z200
+m8
+N16 CYCLE61(100,1,2,0,-5,10,155,-85,4,40,0,500,11,0,1,11000)
+N17 g0 z200
+m9 m1
+
+N19 T="FR8AL"
+N20 m6
+N21 d1
+N22 m3 s6500 g94 f1000
+N23 r1=-11
+N24 about:
+N25 g0 x-15 y15
+N26 z1 M8
+N27 g1 z=r1
+N28 aboutf:
+N29 y0 g41
+N30 x150 rnd=.25
+N31 y-74 rnd=.25
+N32 x0 rnd=.25
+N33 y0 rnd=.25
+N34 x2
+N35 y15 g40
+N36 g0 z50
+N37 aboute:
+N40 g0 x-16 y-37
+N41 z100
+;cyctre (rtp, Zwork, sdis, trstep,with, string[50] traect)
+N42 CYCTRE(150,-7,8,.8,29,"G1 x151")
+N43 g0 x30 y-37
+N44 r1=15 r2=0.5 r3=2
+N45 while r1>r2
+N46  r1=r1-r3
+N47  if r1<r2
+N48    r1=r2
+N49  endif
+N50  g1 z-7
+N51  g1 x16 g41 offn=r1
+N52  y-62 rnd=$p_toolr+r1+2.5
+N53  x134 rnd=$p_toolr+r1+2.5
+N54  y-12 rnd=$p_toolr+r1+2.5
+N55  x16 rnd=$p_toolr+r1+2.5
+N56  y-37
+N57  x30 g40
+N58 endwhile
+N59 g0 z200
+N65 G0 X=54 Y=6
+N66 CYCTRE(150,-7,8,.5,10,"zz1")
+N67 G0 X=54 Y=-80
+N68 CYCTRE(150,-7,8,.5,10,"zz2")
+N69 g0 x28 y6
+N70 CYCTRE(150,-7,8,.5,10,"y-12.5")
+N71 g0 x120 y6
+N72 CYCTRE(150,-7,8,.5,10,"y-12.5")
+N73 g0 x28 y-80
+N74 CYCTRE(150,-7,8,.5,10,"y-61.5")
+N75 g0 x120 y-80
+N76 CYCTRE(150,-7,8,.5,10,"y-61.5")
+N78 g0 x28 y-24
+N79 cycang(100,0,-7,5,1,"g1 X21 Y-17");rtp,Zhigh,Zlow,rad,step,move
+N80 g0 x122 y-24
+N81 cycang(100,0,-7,5,1,"g1 X129 Y-17")
+N82 g0 x28 y-50
+N83 cycang(100,0,-7,5,1,"g1 X21 Y-57")
+N84 g0 x122 y-50
+N85 cycang(100,0,-7,5,1,"g1 X129 Y-57")
+g0 z200
+m9 m1
+
+N86 T="FR4AL" ;for Al
+N87 m6
+N88 d1
+N89 m3 s8000 g94 f800
+N90 g0 X21 Y-17 M8
+N91 cycang(100,0,-7,2.5,0.5,"g1 X18.5 Y-14.5");rtp,Zhigh,Zlow,rad,step,move
+N92 g0 X129 Y-17
+N93 cycang(100,0,-7,2.5,0.5,"g1 X131.5 Y-14.5")
+N94 g0 X21 Y-57
+N95 cycang(100,0,-7,2.5,0.5,"g1 X18.5 Y-59.5")
+N96 g0 X129 Y-57
+N97 cycang(100,0,-7,2.5,0.5,"g1 X131.5 Y-59.5")
+N98 offn=-.1
+N99 g0 x155 y10
+N100 z1
+N101 g1 z-7
+N102 faskup:
+N103 G1 X=150.1 g41
+N104 G1 Y=-22
+N105 X=134
+N106 Y=-14.5
+N107 G3 X=131.5 Y=-12 I=AC(131.5) J=AC(-14.5)
+N108 G1 X=125
+N109 Y=5
+N110 X=115
+N111 Y=-12
+N112 X=99
+N113 Y=5
+N114 X=89
+N115 Y=-7
+N116 X=59
+N117 Y=5
+N118 X=49
+N119 Y=-12
+N120 X=33
+N121 Y=5
+N122 X=23
+N123 Y=-12
+N124 X=18.5
+N125 G3 X=16 Y=-14.5 I=AC(18.5) J=AC(-14.5)
+N126 G1 Y=-22
+N127 X-.1
+N128 Y10
+x-10 g40
+N129 g0 z50
+N130 faskupe:
+
+N131 x-10 y-84
+N132 z1
+N133 g1 z-7
+N134 faskdn:
+N135 G1 X-0.1 g41
+N136 G1 Y=-52
+N137 X=16
+N138 Y=-59.5
+N139 G3 X=18.5 Y=-62 I=AC(18.5) J=AC(-59.5)
+N140 G1 X=23
+N141 Y=-80
+N142 X=33
+N143 Y=-62
+N144 X=49
+N145 Y=-80
+N146 X=59
+N147 Y=-67
+N148 X=89
+N149 Y=-80
+N150 X=99
+N151 Y=-62
+N152 X=115
+N153 Y=-80
+N154 X=125
+N155 Y=-62
+N156 X=131.5
+N157 G3 X=134 Y=-59.5 I=AC(131.5) J=AC(-59.5)
+N158 G1 Y=-52
+N159 X=150.1
+N160 Y=-80
+N161 x155 g40
+N162 g0 z50
+N163 faskdne:
+N164 m1
+
+
+N165 T="SV 4.5"
+N166 m6
+N167 d1
+N168 m3 s1000 g95 f.12
+N169 g0 z200
+m8
+N170 MCALL CYCLE82(100,-7,1,-13.7,,1,0,1,22)
+N171 otv: G0 X=28 Y=-5
+N172 X=54
+N173 X=28 Y=-31
+N174 X=54
+N175 X=28 Y=-43
+N176 Y=-69
+N177 X=54
+N178 Y=-43
+N179 X=94 Y=-69
+N180 X=120
+N181 Y=-43
+N182 X=94
+N183 Y=-31
+N184 X=120
+N185 Y=-5
+N186 X=94
+N187 otve: mcall
+N188 g0 z200
+m9 m1
+
+N190 T="FSK8"
+N191 m6
+N192 d1
+N193 m3 s5000 g94 f800
+N194 g0 z100
+N195 g0 x-15 y15
+M8
+N196 chamf(0,.25,1)
+N197 repeat aboutf aboute
+N198 g0 x155 y10
+N199 chamf(0,.25,1)
+N200 repeat faskup faskupe
+N201 g0 x-10 y-84
+N202 chamf(0,.25,1)
+N203 repeat faskdn faskdne
+m1
+N204 MCALL FS85
+N205 repeat otv otve
+N206 g0 SUPA z-20
+SUPA Y0 M9
+M30

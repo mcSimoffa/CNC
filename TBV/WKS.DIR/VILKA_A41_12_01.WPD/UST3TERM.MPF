@@ -1,0 +1,24 @@
+g56
+WORKPIECE(,,,"PIPE",0,0,-100,-80,100,24)
+T="FR16Z6"
+m6
+d1
+m3 s2800 g94 f400
+R1=0 R2=-43 R3=5
+g0 x50 y0
+WHILE R1>R2
+R1=R1-R3
+IF R1<R2
+ R1=R2
+ENDIF
+z=R1 M8
+g1 y27.5 g41 offn=-0.05
+x-40
+y0 g40
+y-27.5 g41
+x50
+y0 g40
+ENDWHILE
+G0 SUPA Z-20
+supa y0 M9
+m30

@@ -1,0 +1,13 @@
+;RAZMER 140 MM
+N8 G55
+T="FR4"
+N14 M6
+N15 D1
+N16 S2800 M3 G94 f800
+N17 g0 x145 y-24
+z200 M8
+;cyctre (rtp, Zwork, sdis, trstep,with, string[50] traect)
+N49 CYCTRE(150,-4,5,.2,10.06,"g1 y-43")
+N17 g0 x145 y-134
+N49 CYCTRE(150,-4,5,.2,10.06,"g1 y-115")
+m30

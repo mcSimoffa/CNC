@@ -1,0 +1,53 @@
+N10 G54 ;nol na dne tiskov
+STOPRE
+R1=$P_UIFR[1,X,TR]+$P_UIFR[1,X,FI]
+R2=$P_UIFR[1,Y,TR]+$P_UIFR[1,Y,FI]
+R3=$P_UIFR[1,Z,TR]+$P_UIFR[1,Z,FI]
+STOPRE
+$P_UIFR[2]=CTRANS(X,R1+25.7,Y,R2,Z,R3+55)
+G55
+N1 WORKPIECE(,,,"BOX",0,0,-55,-80,0,0,-208,-55)
+N12 T="FR6"
+N13 m6
+N14 d1
+N15 m3 s3000 g94 f500
+N16 g0 x-119 m8 y-37
+Z2
+G1 Z-.25
+Y-20
+G0 Z200 M9
+M1
+
+N2 T="SV 9.9"
+N3 m6
+N4 d1
+N5 m3 s300 g95 f.1
+N6 g0 x-119 m8 y-27.5
+N7 z2
+N8 g1 z-6
+N9 z2 f1
+N10 g0 z200 m9
+N11 m1
+ 
+N12 T="FR6"
+N13 m6
+N14 d1
+N15 m3 s3000 g94 f500
+N16 g0 x-119 m8 y-27.5
+;HELIC(RTP,SDIS,ZNULL,GLUBINA, DOTV, TURNFACTOR
+N17 HELIC(100,1,-3,3,10.2,16)
+N25 g0 x-119 y-27.5 M8
+;cyctr (rtp, Zwork, sdis, trstep,with, string[50] traect,char prof)
+N26 CYCTRE(50,-6,7,0.2,10.2,"G1 x-123")
+N18 g0 z200 m9
+N19 m1
+
+N20 T="FR4"
+N21 m6
+N22 d1
+N24 m3 s5000 g94 f400
+N27 g0 x4 y-27.5 M8
+N28 CYCTRE(50,-8.6,5,0.15,6.2,"G1 x-15")
+N29 g0 z200 m9
+N30 m30
+

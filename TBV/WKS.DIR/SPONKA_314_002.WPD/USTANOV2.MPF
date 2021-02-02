@@ -1,0 +1,24 @@
+G54
+WORKPIECE(,,,"BOX",0,0,-26,-80,-15,0,30,-90)
+T="FR8L30"
+M6
+D1
+M3 S2500 F1000 M8
+CYCLE62("R_15",1,,)
+CYCLE72("",10,0,0.5,-6,1,0,0,1000,200,1,41,2,5,0.1,2,5,0,0.5,0.5,101,1011,100)
+M9
+G0 SUPA Z0
+SUPA Y0
+M30
+
+
+E_LAB_A_R_15: ;#SM Z:3
+;#7__DlgK contour definition begin - Don't change!;*GP*;*RO*;*HD*
+G17 G90 DIAMOF;*GP*
+G0 X15 Y-75 ;*GP*
+G2 X-15 I=AC(0) J=AC(-75) ;*GP*
+;CON,0,0.0000,1,1,MST:0,0,AX:X,Y,I,J,TRANS:1;*GP*;*RO*;*HD*
+;S,EX:15,EY:-75;*GP*;*RO*;*HD*
+;ACW,EX:-15,EY:-75,RAD:15;*GP*;*RO*;*HD*
+;#End contour definition end - Don't change!;*GP*;*RO*;*HD*
+E_LAB_E_R_15:

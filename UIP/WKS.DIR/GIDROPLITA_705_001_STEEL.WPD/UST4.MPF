@@ -34,7 +34,7 @@ m8
 ;RASKATKA(RTP,SDIS,ZNULL,GLUBINA,DST, DFIN,TURNFACTOR)
 N120 mcall RASKATKA(50,1,0,.5,12,26,2)
 repeat otv otve
-N120 mcall RASKATKA(50,1,0,20,12,15.4,2)
+N120 mcall RASKATKA(50,1,0,20,12,15.4,5)
 repeat otv otve
 g0 SUPA z-20
 m9 m1
@@ -42,7 +42,7 @@ m9 m1
 T="FR6"
 m6
 d1
-m3 s5000 g94 f700
+m3 s5000 g94 f1200
 g0 x-4.5 y6 z200 m8
 ;cyctr (rtp, Zwork, sdis, trstep,with, string[50] traect,char prof)
 N150 CYCTRE(50,-10,11,0.15,11,"G1 y-52.5")

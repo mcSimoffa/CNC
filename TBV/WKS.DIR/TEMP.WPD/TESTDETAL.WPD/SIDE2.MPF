@@ -1,0 +1,50 @@
+N10 T="SV10"D1M6
+WORKPIECE(,"",,"BOX",64,45,0,0,-5,-5,300,300)
+M7
+N30 G54
+N50 M3S900
+N40 G0Z100
+CYCLE62("S2",1,,)
+N80 CYCLE72("",100,2,1,0,1,0,0,500,100,101,41,1,2,0.1,1,2,0,1,2,101,1011,100)
+M30
+N70 E_LAB_A_S2: ;#SM Z:2
+;#7__DlgK contour definition begin - Don't change!;*GP*;*RO*;*HD*
+G17 G90 DIAMOF;*GP*
+G0 X0 Y0 ;*GP*
+G1 Y190 ;*GP*
+X40 ;*GP*
+Y300 ;*GP*
+X270 ;*GP*
+Y90 ;*GP*
+X220 ;*GP*
+Y0 ;*GP*
+X0 ;*GP*
+;CON,0,0.0000,8,8,MST:0,0,AX:X,Y,I,J,TRANS:1;*GP*;*RO*;*HD*
+;S,EX:0,EY:0;*GP*;*RO*;*HD*
+;LU,EY:190;*GP*;*RO*;*HD*
+;LR,EX:40;*GP*;*RO*;*HD*
+;LU,EY:300;*GP*;*RO*;*HD*
+;LR,EX:270;*GP*;*RO*;*HD*
+;LD,EY:90;*GP*;*RO*;*HD*
+;LL,EX:220;*GP*;*RO*;*HD*
+;LD,EY:0;*GP*;*RO*;*HD*
+;LL,EX:0;*GP*;*RO*;*HD*
+;#End contour definition end - Don't change!;*GP*;*RO*;*HD*
+E_LAB_E_S2:
+CYCLE62("S3",1,,)
+E_LAB_A_S3: ;#SM Z:2
+;#7__DlgK contour definition begin - Don't change!;*GP*;*RO*;*HD*
+G17 G90 DIAMOF;*GP*
+G0 X0 Y0 ;*GP*
+G1 Y50 RND=10 ;*GP*
+X50 Y45 ;*GP*
+;CON,0,0.0000,2,2,MST:0,0,AX:X,Y,I,J,TRANS:1;*GP*;*RO*;*HD*
+;S,EX:0,EY:0;*GP*;*RO*;*HD*
+;LU,EY:50;*GP*;*RO*;*HD*
+;R,RROUND:10;*GP*;*RO*;*HD*
+;LA,EX:50,EY:45;*GP*;*RO*;*HD*
+;R,RROUND:25;*GP*;*RO*;*HD*
+;#End contour definition end - Don't change!;*GP*;*RO*;*HD*
+E_LAB_E_S3:
+N90 M30
+
