@@ -1,0 +1,71 @@
+;baza 'A' lejit na tiskah
+N1 WORKPIECE(,"",,"BOX",64,26,-170,-80,0,0,885,-250)
+GOTO N10
+N2 T="FR 80 GESAK"
+N3 m6
+N4 d1
+N5 m3 s600 g94 f1000
+N6 g0 Z300 m8
+;Planirovanie torca 'A' z=0.4
+N7 CYCLE61(100,26,1,0,0,0,935,-260,4,80,0.4,300,11,0,1,11010)
+N8 g0 z200 m9
+N9 m0
+
+N10 T="KUKURUZA 50 L235"
+N11 M6
+N12 D1
+N13 M3 S960 G94 F600
+GOTO N1000
+;Obkatka stenok snaruji
+N14 OFFN=0.4
+N15 R1=0 R2=-90 R3=30
+N16 WHILE R1>R2
+N17  R1=R1-R3
+N18  IF R1<R2
+N19    R1=R2
+N20  ENDIF
+N21  KNT: G0 X=-$p_toolr Y=$p_toolr+30
+N22  Z1
+N23  G1 Z=R1
+N24  y0 G41
+N25  X885 rnd=.5
+N26  Y-250 rnd=.5
+N27  X0 rnd=.5
+N28  y0 rnd=.5
+N29  x5
+N30  KNTE: Y=$p_toolr+30 G40
+N31 ENDWHILE
+N32 G0 Z100
+N33 M0
+
+N1000
+N15 R1=-110 R2=-134.5 R3=30 ;viborka okna na ploskosto 'A' R2=-134.5
+N16 WHILE R1>R2
+N17  R1=R1-R3
+N18  IF R1<R2
+N19    R1=R2
+N20  ENDIF
+N21  g0 x948 y-155
+;cyctre (rtp, Zwork, sdis, trstep,with, string[50] traect)
+CYCTRE(50,R1,-R1+1,2,124,"G1 X822")
+N31 ENDWHILE
+N32 G0 Z100
+N33 M0
+
+M30
+T="FR 16 L60"
+m6
+d1
+m3 s2500 g94 f600
+g0 x200 m10
+r1=-30
+offn=0
+repeat KNT KNTE
+r1=-55
+offn=0
+repeat KNT KNTE
+g0 z200 m9
+N640 SUPA Y0
+N641 T0 D0
+N642 M30
+

@@ -1,0 +1,81 @@
+;baza 'A' lejit na tiskah
+N1 WORKPIECE(,,,"BOX",0,0,-170,-80,0,0,885,-250)
+N2 T="FR 100"
+N3 m6
+N4 d1
+N5 m3 s450 g94 f600
+N6 g0 z200 m8
+;Planirovanie torca 'A' z=0.4
+N7 CYCLE61(100,10,1,0,0,0,900,-250,4,60,0.4,600,11,0,1,11010)
+N8 g0 z200 m9
+N9 m0
+
+N10 T="KUKURUZA 63"
+N11 M6
+N12 D1
+N13 M3 S800 G94 F600
+;Obkatka stenok snaruji
+N14 OFFN=0.4
+N15 R1=0 R2=-90 R3=45
+N16 WHILE R1>R2
+N17  R1=R1-R3
+N18  IF R1<R2
+N19    R1=R2
+N20  ENDIF
+N21  KNT: G0 X=-$p_toolr Y=$p_toolr+30
+N22  Z1
+N23  G1 Z=R1
+N24  y0 G41
+N25  X885 rnd=.5
+N26  Y-250 rnd=.5
+N27  X0 rnd=.5
+N28  y0 rnd=.5
+N29  x5
+N30  KNTE: Y=$p_toolr+30 G40
+N31 ENDWHILE
+N32 G0 Z100
+N33 M1
+
+T="FR 66 HF"
+m6
+d1
+m3 s900 g94 f7000
+g0 z200 m7
+G0 X=925 Y=-165
+z1 ;karman 'A' tolko zahod
+r1=1 r2=-129.6 r3=.8
+while r1>r2
+ r1=r1-r3
+ if r1<r2
+    r1=r2
+ endif
+G1 Y=-165 z=r1 
+G1 X=871.524
+G2 Y=-125 I=AC(871.524) J=AC(-145)
+G1 X=890
+G3 Y=-115.85 I=AC(890) J=AC(-120.425)
+G1 X=826.524
+G3 X=821.524 Y=-120.85 I=AC(826.524) J=AC(-120.85)
+G1 Y=-169.15
+G3 X=826.524 Y=-174.15 I=AC(826.524) J=AC(-169.15)
+G1 X=925
+ENDWHILE
+G0 Z200 M9
+m0
+
+T="FR 16"
+m6
+d1
+m3 s2500 g94 f600
+g0 x200 m10
+r1=-30
+offn=0
+repeat KNT KNTE
+r1=-55
+offn=0
+repeat KNT KNTE
+g0 z200 m9
+N640 SUPA Y0
+N641 T0 D0
+N642 M30
+

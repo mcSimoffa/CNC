@@ -1,0 +1,142 @@
+;baza 'A' obrabativaetsa
+N1 WORKPIECE(,,,"BOX",0,0,-170,-80,0,0,885,-250)
+N2 T="WSX445_080"
+N3 m6
+N4 d1
+N5 m3 s350 g94 f400
+N6 g0 z200 m8
+;Planirovanie torca 'A' s prip
+N7 CYCLE61(100,10,1,0,-5,5,890,-255,4,60,0.4,600,11,0,1,11010)
+N8 g0 z200 m9
+N9 m1
+
+N10 T="FR 160"
+N11 m6
+N12 d1
+N13 m3 s300 g94 f400
+N14 g0 z200 m8
+;Planirovanie torca 'A' vmeru
+N15 CYCLE61(100,0.5,1,0,0,0,900,-255,4,60,0.5,400,32,0,1,11010)
+N16 g0 z200 m9
+N17 m1
+
+N18 T="KUKURUZA 63"
+N19 M6
+N20 D1
+N21 M3 S800 G94 F600
+;Obkatka stenok snaruji
+N22 OFFN=0.2
+N23 R1=0 R2=-90 R3=45
+N24 WHILE R1>R2
+N25  R1=R1-R3
+N26  IF R1<R2
+N27    R1=R2
+N28  ENDIF
+N29  KNT: G0 X=-$p_toolr Y=$p_toolr+30
+N30  Z1
+N31  G1 Z=R1
+N32  y0 G41
+N33  X885 rnd=.5
+N34  Y-250 rnd=.5
+N35  X0 rnd=.5
+N36  y0 rnd=.5
+N37  x5
+N38  KNTE: Y=$p_toolr+30 G40
+N39 ENDWHILE
+N40 G0 Z100
+N41 M0
+
+N42 T="FR 66 HF"
+N43 m6
+N44 d1
+N45 m3 s900 f7000 g94
+N46 g0 x353 y-99 z100 m11
+N47 g1 z1 fb=2000 ;karman 'B' s pripuskom
+N48 R1=0.6 R2=-4.7 R3=.8
+N49 WHILE R1>R2
+N50  R1=R1-R3
+N51  IF R1<R2
+N52    R1=R2
+N53  ENDIF
+N54 g0 x353 y-99
+N55 g3 i=ac(378) j=ac(-99) turn=2 z=r1
+N56 x378 y-124 i=ac(378) j=ac(-99)
+N57 g1 x559 rnd=10
+N58 y-76 rnd=10
+N59 x353 rnd=10
+N60 y-157 rnd=5
+N61 x592 rnd=5
+N62 y-43 rnd=5
+N63 x353 rnd=5
+N64 y-99
+N65 endwhile
+N66 g0 z100 m9
+N67 m0
+
+N68 T="FR 52"
+N69 m6
+N70 d1
+N71 M3 S1000 G94 F500
+N72 g0 z200 m8
+;KARMAN 'B' vmeru
+N73 CYCLE62("KARMAN_B",0,,)
+N74 CYCLE63("pr52",1011,100,-4.5,0.5,-5,600,200,25,5,0,0,0,550,0,25,0.5,1,1,2,,,,0,101,110)
+N75 m0
+
+N76 T="FR 16"
+N77 m6
+N78 d1
+N79 m3 s2500 g94 f500
+N80 g0 x200 m10
+N81 r1=-45
+N82 offn=-.1
+N83 repeat KNT KNTE
+N84 g0 z200
+N85 m0
+
+;dorbotka uglov karmana 'B'
+N86  G0 X587 y-48 f1000
+N87  cycang(100,1,-5,20,1,"g1 X605 y-30");rtp,Zhigh,Zlow,rad,step,move
+N88  G0 X587 y-152
+N89  cycang(100,1,-5,20,1,"g1 X605 y-170")
+N90  G0 X358 y-152
+N91  cycang(100,1,-5,20,1,"g1 X340 y-170")
+N92  G0 X358 y-48
+N93  cycang(100,1,-5,20,1,"g1 X340 y-30")
+N94 g0 z200 m9
+N95 m0
+
+N96 T="SV 17.5"
+N97 m6
+N98 d1
+N99 m3 s1500 g95 f.2
+N100 g0 z200 m10
+
+N101 MCALL CYCLE82(100,-5,1,-37,,1,10,1,22)
+N102 OTV175: G0 X=420 Y=-29
+N103 G1 Y=-171
+N104 X=530
+N105 Y=-29
+N106 OTVE175: mcall
+N107 g0 x200 m9
+
+N108 T="E45X-D06"
+N109 m6
+N110 d1
+N111 m3 s3000 g94 f400
+N112 G0 X470 Y-20
+N113 CHAMF(0,.5,1.5) ;Z0;KATET,DEBT
+N114 G347 y-10  disr=5 G41
+N115 g1 x320 rnd=20
+N116 y-190 rnd=20
+N117 x625 rnd=20
+N118 y-10 rnd=20
+N119 x469
+N120 g348 disr=5 y-20 g40
+N121 g0 z100
+N122 mcall cfhole(50,1,-5,.5,17.5);RTP,SDIS,ZNULL,KATET,DOTV
+N123 REPEAT OTV175 OTVE175
+N124 SUPA Y0
+N125 T0 D0
+N126 M30
+
